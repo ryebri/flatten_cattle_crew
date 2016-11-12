@@ -1,6 +1,7 @@
 package app;
 
 import java.io.IOException;
+import java.net.SocketAddress;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -26,6 +27,19 @@ public class MainApp extends Application {
 
 	public static void main(String[] args) {
 		launch(args);
+		
+		try
+		{
+			RoombaComm rc = new RoombaComm();
+			
+			rc.connect("192.168.1.1", 42880);
+			rc.send_string("\r\n");
+			
+			rc.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 	
 
