@@ -1,19 +1,27 @@
 package app;
 
 import java.io.IOException;
-import java.net.SocketAddress;
 
+import app.model.TextOutput;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+/**
+ * Beginning of the JavaFX GUI
+ * @author ryebri
+ *
+ */
 public class MainApp extends Application {
 
 	private Stage primaryStage;
     private BorderPane rootLayout;
+    private ObservableList<TextOutput> outputData = FXCollections.observableArrayList();
     
 	@Override
 	public void start(Stage primaryStage) {
@@ -24,22 +32,21 @@ public class MainApp extends Application {
 		
 		showMainPage();
 	}
-
+	
+	/**
+	 * Returns the data as an observable list of output data
+	 * @return
+	 */
+	public ObservableList<TextOutput> getOutputData() {
+		return outputData;
+	}
+	
+	/**
+	 * Launches the physical gui
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		launch(args);
-		
-		try
-		{
-			RoombaComm rc = new RoombaComm();
-			
-			rc.connect("192.168.1.1", 42880);
-			rc.send_string("\r\n");
-			
-			rc.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 	}
 	
 
@@ -57,6 +64,19 @@ public class MainApp extends Application {
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
             primaryStage.show();
+            
+    		try
+    		{
+    			RoombaComm rc = new RoombaComm();
+    			
+    			rc.connect("192.168.1.1", 42880);
+    			rc.send_string("start\0");
+    			
+    			rc.close();
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    		}
+    		
         } catch (IOException e) {
             e.printStackTrace();
         }

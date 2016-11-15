@@ -19,7 +19,7 @@
             <TextField BorderPane.alignment="CENTER" />
          </bottom>
          <right>
-            <TextArea prefHeight="358.0" prefWidth="200.0" text="This will eventually hold the output" BorderPane.alignment="CENTER" />
+            <ListView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
          </right>
       </BorderPane>
    </children>
