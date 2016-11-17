@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="300.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="300.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.view.OutputTextController">
    <children>
       <BorderPane layoutX="164.0" layoutY="70.0" prefHeight="300.0" prefWidth="600.0" style="-fx-background-color: grey; -fx-border-color: blue;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
@@ -16,10 +16,17 @@
             <Canvas height="200.0" width="200.0" BorderPane.alignment="CENTER" />
          </center>
          <bottom>
-            <TextField BorderPane.alignment="CENTER" />
+            <TextField fx:id="cmdLineBox" onAction="#onEnter" BorderPane.alignment="CENTER" />
          </bottom>
          <right>
-            <ListView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+            <TableView fx:id="outputList" prefHeight="200.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+              <columns>
+                <TableColumn fx:id="firstColumn" prefWidth="75.0" text="CmdOutput" />
+              </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
          </right>
       </BorderPane>
    </children>

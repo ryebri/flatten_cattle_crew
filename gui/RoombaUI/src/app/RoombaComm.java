@@ -41,6 +41,7 @@ public class RoombaComm {
 	//send
 	public void send_string(String send)
 	{
+		//do some error checking
 		out.print(send);
 		out.flush();
 	}
