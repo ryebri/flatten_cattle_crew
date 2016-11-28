@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.canvas.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="300.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.view.OutputTextController">
+<AnchorPane fx:id="main_scene" prefHeight="300.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.view.OutputTextController">
    <children>
-      <BorderPane layoutX="164.0" layoutY="70.0" prefHeight="300.0" prefWidth="600.0" style="-fx-background-color: grey; -fx-border-color: blue;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <BorderPane fx:id="main_borderPane" layoutX="164.0" layoutY="70.0" prefHeight="300.0" prefWidth="600.0" style="-fx-background-color: grey; -fx-border-color: blue;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
-            <Canvas height="92.0" width="611.0" BorderPane.alignment="CENTER" />
+            <Group fx:id="sensor_group">
+               <children>
+                  <Canvas fx:id="sensor_map" height="92.0" width="900.0" BorderPane.alignment="CENTER" />
+               </children>
+            </Group>
          </top>
          <center>
             <Canvas height="200.0" width="200.0" BorderPane.alignment="CENTER" />
