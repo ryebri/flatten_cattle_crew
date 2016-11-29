@@ -63,6 +63,19 @@ public class RoombaComm {
 	{
 		String resp = "Timeout";
 		//add in option for different responses, and actual response from robot
+		if(inst == 0x00)
+		{
+			try {
+				//need a timeout/a better way to read until there is nothing left to send
+				resp = in.readLine();
+				System.out.println(resp);
+				//check to see if it is a json object, if it is, then it will have ir values
+				in.reset();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
 		return resp;
 	}

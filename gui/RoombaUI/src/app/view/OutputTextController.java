@@ -1,5 +1,6 @@
 package app.view;
 
+import app.IRdata;
 import app.MainApp;
 import app.model.TextOutput;
 import javafx.beans.value.ChangeListener;
@@ -195,15 +196,23 @@ public class OutputTextController {
 	
 	@FXML
 	public void onEnter(ActionEvent ae){
+		String received;
 //	   System.out.println("test") ;
 	   mainApp.getOutputData().add(new TextOutput(">> " + cmdLineBox.getText()));
 	   mainApp.rc.send_string(cmdLineBox.getText() + "\0", mainApp.test);
-	   mainApp.rc.test();
+//	   mainApp.rc.test();
 //	   sensor_map.getGraphicsContext2D().clearRect(0, 0, sensor_map.getWidth(), sensor_map.getHeight());
 //	   drawShapes(sensor_map.getGraphicsContext2D());
 	   this.mainApp.getPrimaryStage().show();
 	   cmdLineBox.clear();
-	  
+	   
+	   received = mainApp.rc.get_response(mainApp.test);
+	   mainApp.getOutputData().add(new TextOutput("<< " + received));
+	   IRdata data = new IRdata(received);
+	   set_sensor(data.getData());
+	   
 
 	}
+	
+	
 }

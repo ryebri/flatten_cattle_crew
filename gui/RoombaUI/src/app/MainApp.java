@@ -5,16 +5,16 @@ import java.io.IOException;
 import app.model.TextOutput;
 import app.view.OutputTextController;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  * Beginning of the JavaFX GUI
@@ -29,7 +29,7 @@ public class MainApp extends Application {
     public RoombaComm rc;
     private OutputTextController controller;
 //    public ResizableCanvas sensor_map;
-	public final char test = (char)0x01;	//change to 0x00 when in actual use
+	public final char test = (char)0x00;	//change to 0x00 when in actual use
     
     public MainApp(){
     	/*
@@ -81,7 +81,19 @@ public class MainApp extends Application {
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
-
+            primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>(){
+            	public void handle(WindowEvent we) {
+            		try {
+            			if(test == 0x00)
+            			{
+            				rc.close();
+            			}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+            	}
+            });
             primaryStage.show();
 
             
@@ -91,9 +103,9 @@ public class MainApp extends Application {
     			if(test == 0x00)
     			{	
 					rc.connect("192.168.1.1", 42880);
-					rc.send_string("start\0", test);
+//					rc.send_string("start\0", test);
     			
-					rc.close();		//needs to be called eventually/on close of program
+//					rc.close();		//needs to be called eventually/on close of program
     			}
     		} catch (Exception e) {
     			e.printStackTrace();
