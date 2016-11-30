@@ -11,7 +11,7 @@ import java.util.Random;
 
 import app.view.OutputTextController;
 
-
+//make this a new thread object
 public class RoombaComm {
 	//constructor
 	private Socket socket;

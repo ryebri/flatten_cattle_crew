@@ -132,7 +132,7 @@ public class OutputTextController {
 	public void set_sensor(int[] ir_sensor)
 	{
 		ir_reading = ir_sensor;
-		for(int i = 0; i < 180; i++)
+		for(int i = 179; i > -1; i--)
 		{
 			ir_reading[i] = get_color(ir_sensor[i]);
 		}
@@ -146,8 +146,7 @@ public class OutputTextController {
 	{
 		int color = -1;
 		
-		if(ir < 10)
-		{
+		if(ir < 10 && ir != -1){
 			color = Colors.DARK_RED.numVal;
 		} else if(ir < 15){
 			color = Colors.RED.numVal;

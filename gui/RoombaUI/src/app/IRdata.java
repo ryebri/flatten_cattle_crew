@@ -4,6 +4,7 @@ public class IRdata {
 	
 	private String name;
 	private int data[];
+	private Obstruction obstr[];
 	
 	public IRdata(String json){
 		str_to_obj(json);
@@ -50,8 +51,15 @@ public class IRdata {
 				i+=3;
 				
 			}
+		} else if(data != null && name.compareTo("sonar") == 0){
+			obstr = new Obstruction[15];
+			//{"sonar": {[18, 3.2, 20], [28, 6.4, 30]}}
 		} else {
 			data = null;
 		}
+	}
+	
+	public void add_sonar_data(String json){
+		
 	}
 }
