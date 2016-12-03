@@ -1,0 +1,1 @@
+"./botlogic.obj" "./lcd.obj" "./main.obj" "./movement.obj" "./open_interface.obj" "./timer.obj" "./tm4c1231e6pm_startup_ccs.obj" "../tm4c1231e6pm.cmd" -llibc.a 
