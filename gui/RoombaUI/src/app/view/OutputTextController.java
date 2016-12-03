@@ -1,6 +1,6 @@
 package app.view;
 
-import app.IRdata;
+import app.SensorData;
 import app.MainApp;
 import app.model.TextOutput;
 import javafx.beans.value.ChangeListener;
@@ -26,6 +26,9 @@ public class OutputTextController {
 	
 	@FXML
 	private Canvas sensor_map;
+	
+	@FXML
+	private Canvas area_map;
 	
 	private MainApp mainApp;
 	//light red		Color.rgb(255,94,94)
@@ -142,6 +145,28 @@ public class OutputTextController {
 		drawShapes(gc);
 	}
 	
+	// For the birds eye view map
+	private void draw_map(GraphicsContext gc){
+		
+		//draw the border
+		gc.setStroke(Color.BLACK);
+		gc.setLineWidth(1.0);
+		gc.strokeLine(0, 0, 0, area_map.getHeight());
+		gc.strokeLine(0, 0, area_map.getWidth(), 0);
+		gc.strokeLine(0, area_map.getHeight(), area_map.getWidth(), area_map.getHeight());
+		gc.strokeLine(area_map.getWidth(), 0, area_map.getWidth(), area_map.getHeight());
+		
+		gc.setFill(Color.GREEN);
+		gc.setStroke(Color.GREEN);
+		gc.setLineWidth(5.0);
+		gc.fillOval((area_map.getWidth()/2), (area_map.getHeight()/2), 10, 10);
+		gc.strokeOval((area_map.getWidth()/2), (area_map.getHeight()/2), 10, 10);
+		
+		gc.setStroke(Color.RED);
+		gc.setLineWidth(2.0);
+		gc.strokeLine(0, 0, area_map.getWidth(), area_map.getHeight());
+	}
+	
 	private int get_color(int ir)
 	{
 		int color = -1;
@@ -205,10 +230,12 @@ public class OutputTextController {
 	   this.mainApp.getPrimaryStage().show();
 	   cmdLineBox.clear();
 	   
-	   received = mainApp.rc.get_response(mainApp.test);
-	   mainApp.getOutputData().add(new TextOutput("<< " + received));
-	   IRdata data = new IRdata(received);
-	   set_sensor(data.getData());
+	   draw_map(area_map.getGraphicsContext2D());
+	   
+//	   received = mainApp.rc.get_response(mainApp.test);
+//	   mainApp.getOutputData().add(new TextOutput("<< " + received));
+//	   SensorData data = new SensorData(received);
+//	   set_sensor(data.getData());
 	   
 
 	}
