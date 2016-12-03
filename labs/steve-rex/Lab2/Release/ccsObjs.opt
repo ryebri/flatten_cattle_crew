@@ -1,0 +1,1 @@
+"./helloworld.obj" "./lcd.obj" "./main.obj" "./timer.obj" "./tm4c1231e6pm_startup_ccs.obj" "../tm4c1231e6pm.cmd" -llibc.a 
