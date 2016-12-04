@@ -1,0 +1,39 @@
+0  |
+1  | - left speed
+2  |
+
+3  | 
+4  | - right speed
+5  |
+
+6  - start scan
+7  - free from collision alert (if needed/ wanted)
+8  
+9  - 90 degree left turn
+10 - 90 degree right turn
+11 - stop
+12 
+13 
+14 
+15
+
+
+16 
+17 
+18 
+19 
+20 
+21 
+22 
+23 
+24 
+25 
+26 
+27
+28 
+29 
+30 
+31
+
+
+ 
