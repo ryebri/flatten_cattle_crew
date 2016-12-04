@@ -55,6 +55,10 @@ public class SensorData {
 		return sensors;
 	}
 	
+	public int get_obstr_size(){
+		return obstr_size;
+	}
+	
 	
 	private void str_to_obj(String json){
 		int i = 0, index = -1, temp = 0;
@@ -121,6 +125,8 @@ public class SensorData {
 				}			
 				i++;
 			}
+			
+			obstr_size = index + 1;
 			//{"object": {[distance, angle, width], [...]}}
 			//{"object": {[018, 032, 020], [028, 006, 030]}}
 		} else if(name.compareTo("position") == 0){

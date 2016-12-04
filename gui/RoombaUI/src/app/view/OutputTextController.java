@@ -1,9 +1,12 @@
 package app.view;
 
+import java.awt.Point;
 import java.util.ArrayList;
 
 import app.MainApp;
 import app.Obstruction;
+import app.Pipe;
+import app.Position;
 import app.SensorData;
 import app.model.TextOutput;
 import javafx.beans.value.ChangeListener;
@@ -33,9 +36,10 @@ public class OutputTextController {
 	@FXML
 	private Canvas area_map;
 	
-	private SensorData data;
+	private SensorData data;						//parses and reads in all data from bot
+	private Position position;						//stores position data 
+	private ArrayList<Obstruction> obstructions;	//array list containing all known obstructions
 	
-	private ArrayList<Obstruction> obstructions;
 	
 	private MainApp mainApp;
 	//light red		Color.rgb(255,94,94)
@@ -119,7 +123,8 @@ public class OutputTextController {
 		gc.clearRect(0, 0, sensor_map.getWidth(), sensor_map.getHeight());	//use this to clear the canvas
 		
 		//drawShapes(gc);
-		
+		obstructions = new ArrayList<Obstruction>();
+		position = new Position();
 		this.mainApp.getPrimaryStage().show();
 	}
 	
@@ -167,24 +172,24 @@ public class OutputTextController {
 		gc.setFill(Color.GREEN);
 		gc.setStroke(Color.GREEN);
 		gc.setLineWidth(5.0);
-		gc.fillOval((area_map.getWidth()/2), (area_map.getHeight()/2), 10, 10);
-		gc.strokeOval((area_map.getWidth()/2), (area_map.getHeight()/2), 10, 10);
+		gc.fillOval((position.get_curr_position().x), (position.get_curr_position().y), 10, 10);
+		gc.strokeOval((position.get_curr_position().x), (position.get_curr_position().y), 10, 10);
 		
 		//call method to draw obstructions
 		
-		gc.setStroke(Color.RED);
-		gc.setLineWidth(2.0);
-		gc.strokeLine(0, 0, area_map.getWidth(), area_map.getHeight());
+//		gc.setStroke(Color.RED);
+//		gc.setLineWidth(2.0);
+//		gc.strokeLine(0, 0, area_map.getWidth(), area_map.getHeight());
 	}
 	
 	private void draw_obstructions(GraphicsContext gc){
 		//depending upon what type of object it is, it creates a different object
 		
-		//pipes are both the same, blue circle 
+		//pipes are both the same, red circle 
 		
 		//line draws a white line (might need to add in some other data about it
 		
-		//rock draws a triangle
+		//rock draws a blue circle
 		
 		//hole draws a rectangle
 	}
@@ -192,8 +197,9 @@ public class OutputTextController {
 	private int get_color(int ir)
 	{
 		int color = -1;
-		
-		if(ir < 10 && ir != -1){
+		if(ir == -1){
+			color = Colors.DARK_VIOLET.numVal;
+		}else if(ir < 10){
 			color = Colors.DARK_RED.numVal;
 		} else if(ir < 15){
 			color = Colors.RED.numVal;
@@ -266,6 +272,7 @@ public class OutputTextController {
 	   //receive objects
 	   received = mainApp.rc.get_response(mainApp.test);
 	   data.add_data(received);
+	   Obstruction[] temp = data.getObstruction();
 	   mainApp.getOutputData().add(new TextOutput("<< " + received));
 	   
 	   //receive position and direction 
@@ -274,7 +281,28 @@ public class OutputTextController {
 	   //add west (negative) and east (positive) to get current position
 	   
 	   //receive other sensor data
+	   
+	   //interpret obstructions based upon sensor data
+	   interpret_obstructions(temp);
 
+	}
+	
+	//based upon other sensor data, inputs data to the obstruction array
+	// will have another argument eventually containing sensor data
+	private void interpret_obstructions(Obstruction[] obstr){
+		for(int i = 0; i < data.get_obstr_size(); i++){
+			Obstruction temp = new Pipe(obstr[i].get_distance(), obstr[i].get_angle(), obstr[i].get_width());
+			Point location = calculate_location(temp);
+			//do a check to see if object exists in/near the same location
+			obstructions.add(temp);
+		}
+	}
+	
+	private Point calculate_location(Obstruction obstr){
+		Point p = new Point();
+		
+		
+		return p;
 	}
 	
 	

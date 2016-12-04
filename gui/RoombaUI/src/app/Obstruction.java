@@ -1,14 +1,8 @@
 package app;
 
-import java.awt.Point;
+import javafx.scene.canvas.GraphicsContext;
 
 public class Obstruction {
-	
-	private int width;			//calculated width of object
-	private double distance;	//distance from bot
-	private int angle;			//angle from bot
-	private Point point;		//point on the canvas
-	private ObstructionType type;
 	
 	//might not be able to tell the difference between a large pipe and a small pipe
 	public enum ObstructionType {
@@ -19,65 +13,69 @@ public class Obstruction {
 		public int getValue() { return index; }
 	}
 	
+	private ObstructionType type;
+	private int distance;
+	private int angle;
+	private int width;
+	
 	public Obstruction(){
-		this.width = -1;
-		this.distance = -1;
-		this.angle = -1;
-		this.point = null;
-		this.type = null;
+		distance = 0;
+		angle = 0;
+		width = 0;
+		type = null;
 	}
 	
-	public Obstruction(int width, double distance, int angle){
-		this.width = width;
+	public Obstruction(int distance, int angle, int width){
 		this.distance = distance;
 		this.angle = angle;
-		this.point = null;
-		this.type = null;
+		this.width = width;
+		
+	}
+	
+	/* overriden in the children classes
+	 * used to draw the shapes on the canvas
+	 */
+	public void drawShape(GraphicsContext gc){
+		
 	}
 	
 	/*
-	 * get the width, distance, angle, point, type
+	 * getters
 	 */
-	public int get_width(){
-		return width;
-	}
-	
-	public double get_distance(){
-		return distance;
+	public ObstructionType get_type(){
+		return type;
 	}
 	
 	public int get_angle(){
 		return angle;
 	}
 	
-	public Point get_point(){
-		return point;
+	public int get_distance(){
+		return distance;
 	}
 	
-	public ObstructionType get_type(){
-		return type;
+	public int get_width(){
+		return width;
 	}
 	
 	/*
-	 * Set the width, distance, angle, point, type
+	 * setters
 	 */
-	public void set_width(int width){
-		this.width = width;
-	}
-	
-	public void set_distance(double distance){
-		this.distance = distance;
+	public void set_type(ObstructionType type){
+		this.type = type;
 	}
 	
 	public void set_angle(int angle){
 		this.angle = angle;
 	}
 	
-	public void set_point(int x, int y){
-		this.point = new Point(x, y);
+	public void set_distance(int distance){
+		this.distance = distance;
 	}
 	
-	public void set_type(ObstructionType type){
-		this.type = type;
+	public void set_width(int width){
+		this.width = width;
 	}
+	
+
 }
