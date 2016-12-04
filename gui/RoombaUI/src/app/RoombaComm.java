@@ -18,6 +18,7 @@ public class RoombaComm {
 	private BufferedReader in;
 	private PrintWriter out;
 	private OutputTextController outputTxtCntr;
+	private int bitfield;
 	
 	private Random rand = new Random(3);
 	public RoombaComm()
@@ -57,7 +58,59 @@ public class RoombaComm {
 			out.flush();
 		}
 	}
+	//Rex Borseth
+	//send
+	public void send_bitfield(int id, boolean pressed)
+	{
+		switch(id){
+		case 0:
+			// make function for sending specific bit
+			break;
+		case 3:
+			break;
+		case 6:
+			break;
+		case 7:
+			break;
+		case 9:
+			break;
+		case 10:
+			break;
+		case 11:
+		}
+		out.print(bitfield);
+		out.flush();
+	}
 	
+	
+	private void set_button_bit(int bit, boolean pressed){// adds the button bit to the bitfield
+		if(pressed){
+			bitfield +=bit^2;
+		}
+		else{
+			bitfield -= bit^2;
+		}
+	}
+	private void send_trigger_bit(int speed, boolean isright,boolean pressed){	// adds bits for the trigger to the bitfield
+		if(isright){
+			if(pressed){
+				bitfield += speed * 8;
+			}
+			else{
+				bitfield &= 65479; // clears bits
+			}
+		}
+		else{
+			if(pressed){
+				bitfield += speed;
+			}
+			else{
+				bitfield &= 65528;// clears bits
+			}
+		}
+	}
+	
+	//Rex Borseth
 	//receive
 	public String get_response(char inst)
 	{
