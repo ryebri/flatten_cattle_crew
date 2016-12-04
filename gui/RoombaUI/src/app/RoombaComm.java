@@ -70,7 +70,8 @@ public class RoombaComm {
 				resp = in.readLine();
 				System.out.println(resp);
 				//check to see if it is a json object, if it is, then it will have ir values
-				in.reset();
+				//in.reset();
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

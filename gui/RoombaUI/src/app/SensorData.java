@@ -18,9 +18,11 @@ public class SensorData {
 		public int getValue() { return index; }
 	}
 	
+	
 	private String name;
 	private int data[];
 	private Obstruction obstr[];
+	private int obstr_size;
 	private int sensors[];
 	
 	public int flag_data_done;
@@ -32,6 +34,7 @@ public class SensorData {
 	 */
 	public SensorData(String json){
 		flag_data_done = 0;
+		obstr_size = 0;
 		str_to_obj(json);
 	}
 	
@@ -54,7 +57,7 @@ public class SensorData {
 	
 	
 	private void str_to_obj(String json){
-		int i = 0, temp = 0;
+		int i = 0, index = -1, temp = 0;
 		StringBuilder builder = new StringBuilder();
 		while(json.charAt(i) != '\"')
 		{
@@ -84,9 +87,42 @@ public class SensorData {
 				i+=3;
 				
 			}
-		} else if(name.compareTo("obstr") == 0){
+		} else if(name.compareTo("objects") == 0){
+			int obstr_data_index = 0;
 			obstr = new Obstruction[15];
-			//{"obstr": {[18, 3.2, 20], [28, 6.4, 30]}}
+			while(json.charAt(i)!= '['){
+				i++;
+			}
+
+			while(json.charAt(i)!= '}'){
+				if(json.charAt(i) == '[') {
+					index+=1;
+					obstr_data_index = 0;
+					obstr[index] = new Obstruction();
+					
+				} else if(json.charAt(i) == ']' && json.charAt(i+1) != '}'){
+					i+=2;
+				} else if(json.charAt(i) == ','){
+					i++;
+				} else {
+					if(obstr_data_index == 0){
+						obstr[index].set_distance(Character.getNumericValue(json.charAt(i))*100 + Character.getNumericValue(json.charAt(i+1))*10 + Character.getNumericValue(json.charAt(i+2)));
+						i+=3;
+						obstr_data_index++;
+					} else if(obstr_data_index == 1){
+						obstr[index].set_angle(Character.getNumericValue(json.charAt(i))*100 + Character.getNumericValue(json.charAt(i+1))*10 + Character.getNumericValue(json.charAt(i+2)));
+						i+=3;
+						obstr_data_index++;
+					} else if(obstr_data_index == 2){
+						obstr[index].set_width(Character.getNumericValue(json.charAt(i))*100 + Character.getNumericValue(json.charAt(i+1))*10 + Character.getNumericValue(json.charAt(i+2)));
+						i+=3;
+						obstr_data_index++;
+					}	
+				}			
+				i++;
+			}
+			//{"object": {[distance, angle, width], [...]}}
+			//{"object": {[018, 032, 020], [028, 006, 030]}}
 		} else if(name.compareTo("position") == 0){
 			//{"position": {[NORTH, SOUTH, EAST, WEST]}
 		} else if(name.compareTo("sensors") == 0){
@@ -97,7 +133,14 @@ public class SensorData {
 		}
 	}
 	
+	//method to add data to the object
 	public void add_data(String json){
 		str_to_obj(json);
+	}
+	
+	//calculates the position of the object based upon position of bot and object info
+	//1cm is 1 x or y unit
+	private void calc_location(int index){
+		
 	}
 }

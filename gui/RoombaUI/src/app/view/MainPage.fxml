@@ -18,7 +18,7 @@
             </Group>
          </top>
          <center>
-            <Canvas fx:id="area_map" height="500.0" width="900.0" BorderPane.alignment="CENTER" />
+            <Canvas fx:id="area_map" height="550.0" width="860.0" BorderPane.alignment="CENTER" />
          </center>
          <bottom>
             <TextField fx:id="cmdLineBox" onAction="#onEnter" BorderPane.alignment="CENTER" />

@@ -1,7 +1,10 @@
 package app.view;
 
-import app.SensorData;
+import java.util.ArrayList;
+
 import app.MainApp;
+import app.Obstruction;
+import app.SensorData;
 import app.model.TextOutput;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -29,6 +32,10 @@ public class OutputTextController {
 	
 	@FXML
 	private Canvas area_map;
+	
+	private SensorData data;
+	
+	private ArrayList<Obstruction> obstructions;
 	
 	private MainApp mainApp;
 	//light red		Color.rgb(255,94,94)
@@ -156,15 +163,30 @@ public class OutputTextController {
 		gc.strokeLine(0, area_map.getHeight(), area_map.getWidth(), area_map.getHeight());
 		gc.strokeLine(area_map.getWidth(), 0, area_map.getWidth(), area_map.getHeight());
 		
+		//draw the starting position of the robot
 		gc.setFill(Color.GREEN);
 		gc.setStroke(Color.GREEN);
 		gc.setLineWidth(5.0);
 		gc.fillOval((area_map.getWidth()/2), (area_map.getHeight()/2), 10, 10);
 		gc.strokeOval((area_map.getWidth()/2), (area_map.getHeight()/2), 10, 10);
 		
+		//call method to draw obstructions
+		
 		gc.setStroke(Color.RED);
 		gc.setLineWidth(2.0);
 		gc.strokeLine(0, 0, area_map.getWidth(), area_map.getHeight());
+	}
+	
+	private void draw_obstructions(GraphicsContext gc){
+		//depending upon what type of object it is, it creates a different object
+		
+		//pipes are both the same, blue circle 
+		
+		//line draws a white line (might need to add in some other data about it
+		
+		//rock draws a triangle
+		
+		//hole draws a rectangle
 	}
 	
 	private int get_color(int ir)
@@ -232,11 +254,26 @@ public class OutputTextController {
 	   
 	   draw_map(area_map.getGraphicsContext2D());
 	   
-//	   received = mainApp.rc.get_response(mainApp.test);
-//	   mainApp.getOutputData().add(new TextOutput("<< " + received));
-//	   SensorData data = new SensorData(received);
-//	   set_sensor(data.getData());
+	   /*
+	    * Need to receive 4 sets of data
+	    */
+	   //receive ir
+	   received = mainApp.rc.get_response(mainApp.test);
+	   mainApp.getOutputData().add(new TextOutput("<< " + received));
+	   data = new SensorData(received);
+	   set_sensor(data.getData());
 	   
+	   //receive objects
+	   received = mainApp.rc.get_response(mainApp.test);
+	   data.add_data(received);
+	   mainApp.getOutputData().add(new TextOutput("<< " + received));
+	   
+	   //receive position and direction 
+	   //using position, add north (negative) and south (positive) together
+	   
+	   //add west (negative) and east (positive) to get current position
+	   
+	   //receive other sensor data
 
 	}
 	
