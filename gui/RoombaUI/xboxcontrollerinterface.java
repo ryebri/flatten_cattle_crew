@@ -62,6 +62,7 @@ import ch.aplu.xboxcontroller.*;
 				if(value > .5){
 					send_bitfield(0,true);
 				}
+				send_bitfield(0,false);
 		    }
 
 			public void rightTrigger(double value)// right wheel speed
@@ -69,6 +70,7 @@ import ch.aplu.xboxcontroller.*;
 				if(value > .5){
 					send_bitfield(3,true);
 				}
+				send_bitfield(3,false);
 		    }
 
 		    public void leftThumbMagnitude(double magnitude)
