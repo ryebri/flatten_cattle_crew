@@ -9,19 +9,22 @@ import ch.aplu.xboxcontroller.*;
 		  {
 			public void buttonA(boolean pressed)//scan
 		    {
-		    	System.out.println("world");
-		    }
+				send_bitfield(6, pressed);
+			}
 
 			public void buttonB(boolean pressed)// free from collision alert 
 		    {
+				send_bitfield(7,pressed);
 		    }
 
 			public void buttonX(boolean pressed)//swap between forward and reverse
 		    {
+				send_bitfield(9,pressed);
 		    }
 
 		    public void buttonY(boolean pressed)
 		    {
+				send_bitfield(11,pressed);
 		    }
 
 		    public void back(boolean pressed)
@@ -34,10 +37,12 @@ import ch.aplu.xboxcontroller.*;
 
 			public void leftShoulder(boolean pressed)// 90 degree left turn
 		    {
+				send_bitfield(9,pressed);
 		    }
 
 			public void rightShoulder(boolean pressed)// 90 degree right turn
 		    {
+				send_bitfield(10,pressed);
 		    }
 
 		    public void leftThumb(boolean pressed)
@@ -54,10 +59,16 @@ import ch.aplu.xboxcontroller.*;
 
 			public void leftTrigger(double value)// left wheel speed
 		    {
+				if(value > .5){
+					send_bitfield(0,true);
+				}
 		    }
 
 			public void rightTrigger(double value)// right wheel speed
 		    {
+				if(value > .5){
+					send_bitfield(3,true);
+				}
 		    }
 
 		    public void leftThumbMagnitude(double magnitude)
