@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import app.MainApp;
 import app.Obstruction;
+import app.Obstruction.ObstructionType;
 import app.Pipe;
 import app.Position;
 import app.SensorData;
@@ -275,10 +276,11 @@ public class OutputTextController {
 	   Obstruction[] temp = data.getObstruction();
 	   mainApp.getOutputData().add(new TextOutput("<< " + received));
 	   
-	   //receive position and direction 
-	   //using position, add north (negative) and south (positive) together
+	   /* 	receive position and direction 
+	    *  	use this method to update the positions
+	    */
+	   //position.update_positions(north, south, east, west, orientation);
 	   
-	   //add west (negative) and east (positive) to get current position
 	   
 	   //receive other sensor data
 	   
@@ -290,17 +292,48 @@ public class OutputTextController {
 	//based upon other sensor data, inputs data to the obstruction array
 	// will have another argument eventually containing sensor data
 	private void interpret_obstructions(Obstruction[] obstr){
+		int already_exists = 0;
+		
+		//check to see if the pipe is already in the obstructions, add it if it isn't
 		for(int i = 0; i < data.get_obstr_size(); i++){
+			already_exists = 0;
 			Obstruction temp = new Pipe(obstr[i].get_distance(), obstr[i].get_angle(), obstr[i].get_width());
 			Point location = calculate_location(temp);
+			((Pipe)temp).set_point(location.x, location.y);
 			//do a check to see if object exists in/near the same location
-			obstructions.add(temp);
+			for(int j = 0; j < obstructions.size(); j++){
+				if(obstructions.get(j).get_type().getValue() == ObstructionType.LARGE_PIPE.getValue()){
+					Pipe pipe = ((Pipe)obstructions.get(j));
+					
+					//may need to adjust these values, not sure if +- 3 is big enough for margin of error
+					if(pipe.get_point().x+3 > location.x && pipe.get_point().x-3 < location.x && pipe.get_point().y+3 > location.y && pipe.get_point().y-3 < location.y){
+						already_exists = 1;
+						if(pipe.get_distance() < temp.get_distance()){
+							pipe.set_distance(temp.get_distance());
+						}
+						break;
+					}
+				}
+			}
+			if(already_exists != 1){
+				obstructions.add(temp);
+			}
 		}
+		
+		
 	}
 	
 	private Point calculate_location(Obstruction obstr){
 		Point p = new Point();
+		//use distance measure and angle measure in a trig function to decompose into x and y
 		
+		//object is north and east, --
+		
+		//object is north and west, -+
+		
+		//object is south and east, +-
+		
+		//object is south and west, ++
 		
 		return p;
 	}

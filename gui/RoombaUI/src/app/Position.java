@@ -27,6 +27,7 @@ public class Position {
 	
 	//orientation has north at 0
 	public void update_positions(int north, int south, int east, int west, int orientation){
+		//may need to have more logic here if the robot does not take care of things
 		set_total_traveled(north, south, east, west);
 		set_prev_position(curr_position.x, curr_position.y);
 		set_curr_position((x_start - north + south), (y_start - west + east));
