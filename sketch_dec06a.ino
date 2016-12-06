@@ -9,8 +9,6 @@
  * 21 November 2006
  */
 
-#include <Keyboard.h>
-
 int inPin = 2;         // the number of the input pin
 int outPin = 13;       // the number of the output pin
 
@@ -26,12 +24,12 @@ long debounce = 200;   // the debounce time, increase if the output flickers
 void setup()
 {
   pinMode(inPin, INPUT);
-  Keyboard.begin();
-}
+  Serial.begin(9600);}
 
 void loop()
 {
   reading = digitalRead(inPin);
+  Serial.write(0x59); // send a byte with the value 45
 
   // if the input just went from LOW and HIGH and we've waited long enough
   // to ignore any noise on the circuit, toggle the output pin and remember
@@ -39,9 +37,11 @@ void loop()
   
   if (reading == HIGH && previous == LOW && millis() - time > debounce) {
     if (state == HIGH)
-          Keyboard.write(65);
+        Serial.write(45); // send a byte with the value 45
     time = millis();    
   }
+
+  delay(1000);
 
   previous = reading;
 }
