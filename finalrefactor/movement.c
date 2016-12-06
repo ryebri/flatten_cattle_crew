@@ -10,7 +10,7 @@
 #include "math.h"
 
 void botpos_init(botpos_t *b){
-	int i;
+	//int i;
 	b->angle = 0;
 	b->forward = 0;
 	b->right = 0;
@@ -93,6 +93,27 @@ int turn(botpos_t *b, int direction){ // direction determens the direction to tu
 		b->angle += b->sensor_data->angle;
 	}
 	return 0;
+}
+
+
+int bump(botpos_t *b){
+
+    oi_update(b->sensor_data);
+    //updateedge(b);
+	if(b->sensor_data->bumpLeft){
+		if(b->sensor_data->bumpRight){
+			b->bumper = 2;
+			return bothBump;			//Both = 2
+		}
+		b->bumper = 0;
+		return leftBump;				//Left = 0
+	}
+	if(b->sensor_data->bumpRight){
+		b->bumper = 1;
+		return rightBump;				//Right = 1
+	}
+	else{b->bumper = 3;
+		return 3;}						//No Bump = 3
 }
 
 
