@@ -10,24 +10,48 @@
 #include "math.h"
 
 void botpos_init(botpos_t *b){
-	//int i;
+	int i;
 	b->angle = 0;
 	b->forward = 0;
 	b->right = 0;
-	/*
 	for(i = 0; i < 4; i++){
-		b->edges[i] = 0;
-	}*/
+		b->edges[i] = 1;
+	}
+}
+
+void interpret_movement(botpos_t *b,uint_8 left, uint_8 right){
+	if(left < 0){
+		if(right < 0){
+			forward(b,1)
+		}
+		else{
+			turn(b,-1)
+		}
+	}
+	if(left > 0){
+		if(right > 0){
+			forward(b,1);
+		}
+		else{
+			turn(b,-1);
+		}
+	}
+	// we know left must be 0
+	if(right < 0){
+		turn(b,1);
+	}
+	if(right > 0){
+		turn(b,-1);
+	}
 }
 
 
-rtvalue_t forward(botpos_t *b, int distance){// moves the bot forward to "distance" mm untill it reaches its destination or bumps into something
+rtvalue_t forward(botpos_t *b, int dir){// moves the bot forward to "distance" mm untill it reaches its destination or bumps into something
 	int sum = 0;
-	if(distance < 0){
+	if(dir < 0){
 		oi_setWheels(0,0);
 		oi_setWheels(-100,-100);
 		timer_waitMillis(300);
-		distance = distance * -1;
 	}
 	else{
 		oi_setWheels(200,200);
@@ -91,29 +115,9 @@ int turn(botpos_t *b, int direction){ // direction determens the direction to tu
 		oi_update(b->sensor_data);
 		data +=  abs(b->sensor_data->angle);
 		b->angle += b->sensor_data->angle;
+		if(b->angle)
 	}
 	return 0;
-}
-
-
-int bump(botpos_t *b){
-
-    oi_update(b->sensor_data);
-    //updateedge(b);
-	if(b->sensor_data->bumpLeft){
-		if(b->sensor_data->bumpRight){
-			b->bumper = 2;
-			return bothBump;			//Both = 2
-		}
-		b->bumper = 0;
-		return leftBump;				//Left = 0
-	}
-	if(b->sensor_data->bumpRight){
-		b->bumper = 1;
-		return rightBump;				//Right = 1
-	}
-	else{b->bumper = 3;
-		return 3;}						//No Bump = 3
 }
 
 
