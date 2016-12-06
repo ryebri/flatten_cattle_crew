@@ -82,3 +82,84 @@ void send_pulse()
 //	GPIO_PORTB_DEN_R |= 0x08;
 //	NVIC_EN1_R = 0x0001000;
 }
+
+
+
+void recieve_command(botpos_t *bot){
+int i = 0;
+char commands[2];
+	//weird registers that wont read until data arrives...
+	for( i = 0; i < 2; i++){
+		commands[i] = (char)uart_receive();
+	}
+
+	//
+	if(commands[0] & 0x01){ 		//left speed
+		//call function/s
+	}
+	else{
+		// other functions
+	}
+	if(commands[1] & 0x02){ 		//left speed
+		//call function/s
+	}
+	else{
+		// other functions
+	}
+
+	if(commands[2] & 0x04){ 		//Backwards left
+		//call function/s
+	}
+	else{
+		// other functions
+	}
+
+	if(commands[3] & 0x08){ 		//right speed
+		//call function/s
+	}
+	else{
+		// other functions
+	}
+
+	if(commands[4] & 0x10){ 		//right speed
+		//call function/s
+	}
+	else{
+		// other functions
+	}
+	if(commands[0] & 0x20){ 		//backwards right speed
+		//call function/s
+	}
+	else{
+		// other functions
+	}
+
+	if(commands[0] & 0x40){ 		//start scan
+		//call function/s
+	}
+	else{
+		// other functions
+	}
+
+	if(commands[0] & 0x200){ 		//90 degree LEFT turn
+		turn(&bot,90);
+	}
+	else{
+		// other functions
+	}
+
+	if(commands[0] & 0x400){ 		//90 degree RIGHT turn
+		turn(&bot,-90);
+	}
+	else{
+		// other functions
+	}
+
+	if(commands[0] & 0x800){ 		//stop
+		oi_setWheels(0,0);
+	}
+	else{
+		// other functions
+	}
+
+}

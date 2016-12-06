@@ -8,6 +8,8 @@
 #ifndef BOTDATA_H_
 #define BOTDATA_H_
 
+#include <stdlib.h>
+
 typedef enum state {LOW, HIGH, DONE, READY} state_t;
 
 typedef struct{
@@ -25,6 +27,8 @@ typedef struct botdata{
 	int obj_count;
 	Objects obj[10];
 	int skip[10];//skips objects (find width)
+	int edges[4];
+	int commands;
 }botdata_t;
 
 void botdata_init(botdata_t *bdata);

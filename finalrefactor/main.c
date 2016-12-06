@@ -76,7 +76,10 @@ int main(void){
 	interpret_buttons(7);	//so we can move the servo to 90 degrees
 	i = 0;
 
+
+
 //	rec_string[i] = uart_receive();		//when using putty
+	/*
 	while(1)
 	{
 		rec_string[i] = (char)uart_receive();
@@ -90,6 +93,7 @@ int main(void){
 
 		i++;
 	}
+	*/
 	move_servo(0);
 	timer_waitMillis(1000);
 	state = LOW;
