@@ -29,7 +29,6 @@ void setup()
 void loop()
 {
   reading = digitalRead(inPin);
-  Serial.write(0x59); // send a byte with the value 45
 
   // if the input just went from LOW and HIGH and we've waited long enough
   // to ignore any noise on the circuit, toggle the output pin and remember
@@ -37,7 +36,7 @@ void loop()
   
   if (reading == HIGH && previous == LOW && millis() - time > debounce) {
     if (state == HIGH)
-        Serial.write(45); // send a byte with the value 45
+        Serial.write(0x59);
     time = millis();    
   }
 
