@@ -13,13 +13,13 @@ public class Hole extends Obstruction {
 	public Hole(){
 		super(0, 0, 60);
 		set_type(ObstructionType.HOLE);
-		point = null;
+		point = new Point();
 	}
 	
 	public Hole(int x, int y){
 		super(0, 0, 60);
 		set_type(ObstructionType.HOLE);
-		point = null;
+		point = new Point();
 	}
 	
 	@Override
@@ -41,6 +41,10 @@ public class Hole extends Obstruction {
 	 * setters
 	 */
 	public void set_point(int x, int y){
-		point = new Point(x,y);
+		point.setLocation(x, y);
+	}
+	
+	public void set_point(Point p){
+		point.setLocation(p);
 	}
 }

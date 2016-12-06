@@ -40,7 +40,11 @@ public class Pipe extends Obstruction {
 	 * setters
 	 */	
 	public void set_point(int x, int y){
-		point = new Point(x,y);
+		point.setLocation(x, y);
+	}
+	
+	public void set_point(Point p){
+		point.setLocation(p);
 	}
 	
 

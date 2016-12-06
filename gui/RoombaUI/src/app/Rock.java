@@ -12,20 +12,20 @@ public class Rock extends Obstruction {
 	public Rock(){
 		super(0, 0, 0);
 		set_type(ObstructionType.ROCK);
-		point = null;
+		point = new Point();
 	}
 	
 	public Rock(int distance, int angle, int width){
 		super(distance, angle, width);
 		set_type(ObstructionType.ROCK);
-		point = null;
+		point = new Point();
 	}
 	
 	@Override
 	public void drawShape(GraphicsContext gc){
 		gc.setFill(Color.BLUE);
 		gc.setStroke(Color.BLUE);
-		gc.fillOval(point.getX(), point.getY(), 13, 13);
+		gc.fillOval(point.getX(), point.getY(), 13, 13);	//maybe set these to be a little larger?
 		gc.strokeOval(point.getX(), point.getY(), 13, 13);
 	}
 	
@@ -40,7 +40,11 @@ public class Rock extends Obstruction {
 	 * setters
 	 */
 	public void set_point(int x, int y){
-		point = new Point(x,y);
+		point.setLocation(x, y);
+	}
+	
+	public void set_point(Point p){
+		point.setLocation(p);
 	}
 	
 

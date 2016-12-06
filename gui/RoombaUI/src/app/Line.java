@@ -13,8 +13,8 @@ public class Line extends Obstruction {
 	public Line(){
 		super(0,0,0);
 		set_type(ObstructionType.LINE);
-		p1 = null;
-		p2 = null;
+		p1 = new Point();
+		p2 = new Point();
 	}
 	
 	public Line(int x1, int y1, int x2, int y2){
@@ -47,11 +47,20 @@ public class Line extends Obstruction {
 	 * setters
 	 */
 	public void set_p1(int x, int y){
-		p1 = new Point(x,y);
+		p1.setLocation(x, y);
+	}
+	
+	public void set_p1(Point p){
+		p1.setLocation(p);
 	}
 	
 	public void set_p2(int x, int y){
-		p2 = new Point(x,y);
+		p2.setLocation(x, y);
 	}
+	
+	public void set_p2(Point p){
+		p2.setLocation(p);
+	}
+	
 	
 }

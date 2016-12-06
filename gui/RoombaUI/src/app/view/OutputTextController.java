@@ -173,8 +173,15 @@ public class OutputTextController {
 		gc.setFill(Color.GREEN);
 		gc.setStroke(Color.GREEN);
 		gc.setLineWidth(5.0);
-		gc.fillOval((position.get_curr_position().x), (position.get_curr_position().y), 10, 10);
-		gc.strokeOval((position.get_curr_position().x), (position.get_curr_position().y), 10, 10);
+		gc.fillOval((position.get_curr_position().x - 17), (position.get_curr_position().y - 17), 34, 34);
+		gc.strokeOval((position.get_curr_position().x - 17), (position.get_curr_position().y - 17), 34, 34);
+		
+		//draws a cross hair on the screen for ease of testing
+		gc.setStroke(Color.BLACK);
+		gc.setLineWidth(3.0);
+		gc.strokeLine(position.get_curr_position().x, position.get_curr_position().y + 50, position.get_curr_position().x , position.get_curr_position().y - 50);
+		gc.strokeLine(position.get_curr_position().x + 50, position.get_curr_position().y, position.get_curr_position().x - 50, position.get_curr_position().y);
+
 		
 		//call method to draw obstructions
 		
@@ -280,6 +287,19 @@ public class OutputTextController {
 	    *  	use this method to update the positions
 	    */
 	   //position.update_positions(north, south, east, west, orientation);
+	   //testing
+	   if(mainApp.test == 0x01){
+		   
+		   position.set_orientation(120);
+		   Pipe ob1 = new Pipe(40, 65, 6);
+		   ob1.set_point(calculate_location(ob1));
+		   ob1.drawShape(area_map.getGraphicsContext2D());
+		   
+		   Pipe ob2 = new Pipe(43, 120, 2);
+		   ob2.set_point(calculate_location(ob2));
+		   ob2.drawShape(area_map.getGraphicsContext2D());
+	   }
+	  
 	   
 	   
 	   //receive other sensor data
@@ -320,20 +340,69 @@ public class OutputTextController {
 			}
 		}
 		
+		//add way to interpret rocks/lines/holes
+		
 		
 	}
 	
+	/*
+	 * Calculates the location for where an object should be drawn on the canvas
+	 */
 	private Point calculate_location(Obstruction obstr){
 		Point p = new Point();
+		int sin_coeff = 1;
+		int cos_coeff = 1;
+		int adj_angle = 0;
+		Double radian;
+		
+		//converts the angle from the ir sensor to the orientation angle system
+		if(obstr.get_angle() <= 90){
+			adj_angle = (position.get_orientation() + (90 - obstr.get_angle()));
+		} else {
+			adj_angle = (position.get_orientation() - (obstr.get_angle() - 90));
+		}
+		//object is north and east, -+
+		if (adj_angle >= 360){
+			cos_coeff = 1;
+			sin_coeff = -1;
+			adj_angle = 90 - adj_angle % 360;
+			
+		//object is north and west, --
+		}else if(adj_angle >= 270){
+			cos_coeff = -1;
+			sin_coeff = -1;
+			adj_angle = adj_angle - 270;
+			
+		} else if(adj_angle <= -1){
+			cos_coeff = -1;
+			sin_coeff = -1;
+			adj_angle = 90 + adj_angle;
+			
+		//object is south and west, +-
+		} else if(adj_angle >= 180){
+			cos_coeff = -1;
+			sin_coeff = 1;
+			adj_angle = 270 - adj_angle;
+			
+		//object is south and east, ++
+		} else if(adj_angle >= 90){
+			cos_coeff = 1;
+			sin_coeff = 1;
+			adj_angle = adj_angle - 90;
+			
+		//object is north and east, -+
+		} else {
+			cos_coeff = 1;
+			sin_coeff = -1;
+			adj_angle = 90 - adj_angle;
+		}
+		radian = Math.toRadians(adj_angle);
+		
 		//use distance measure and angle measure in a trig function to decompose into x and y
+		p.setLocation((obstr.get_distance()*cos_coeff*Math.cos(radian)), (obstr.get_distance()*sin_coeff*Math.sin(radian)));
 		
-		//object is north and east, --
-		
-		//object is north and west, -+
-		
-		//object is south and east, +-
-		
-		//object is south and west, ++
+		//give it the proper point in the canvas
+		p.setLocation((p.x + position.get_curr_position().x), (p.y + position.get_curr_position().y));
 		
 		return p;
 	}
