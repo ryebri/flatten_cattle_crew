@@ -18,6 +18,7 @@ typedef struct botpos{
 	int angle; 		// the angle that the bot is currently faceing (0 -360) with 0 = forward 90 = right 180 = backwards 270 = left
 	int forward;	// forward is the distance forward (negitive for backwards)
 	int right;  	// right is the distance right traveled (negitive for left)
+	int bumper;
 	uint8_t edges[4];
 	oi_t *sensor_data;
 }botpos_t;
