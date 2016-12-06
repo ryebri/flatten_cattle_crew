@@ -160,7 +160,7 @@ public class OutputTextController {
 	
 	// For the birds eye view map
 	private void draw_map(GraphicsContext gc){
-		
+		gc.clearRect(0, 0, area_map.getWidth(), area_map.getHeight());
 		//draw the border
 		gc.setStroke(Color.BLACK);
 		gc.setLineWidth(1.0);
@@ -179,8 +179,8 @@ public class OutputTextController {
 		//draws a cross hair on the screen for ease of testing
 		gc.setStroke(Color.BLACK);
 		gc.setLineWidth(3.0);
-		gc.strokeLine(position.get_curr_position().x, position.get_curr_position().y + 50, position.get_curr_position().x , position.get_curr_position().y - 50);
-		gc.strokeLine(position.get_curr_position().x + 50, position.get_curr_position().y, position.get_curr_position().x - 50, position.get_curr_position().y);
+		gc.strokeLine(position.get_start_x(), position.get_start_y() + 50, position.get_start_x(), position.get_start_y() - 50);
+		gc.strokeLine(position.get_start_x() + 50, position.get_start_y(), position.get_start_x() - 50, position.get_start_y());
 
 		
 		//call method to draw obstructions
@@ -192,14 +192,63 @@ public class OutputTextController {
 	
 	private void draw_obstructions(GraphicsContext gc){
 		//depending upon what type of object it is, it creates a different object
-		
 		//pipes are both the same, red circle 
-		
 		//line draws a white line (might need to add in some other data about it
-		
 		//rock draws a blue circle
-		
 		//hole draws a rectangle
+		int adj_angle = position.get_orientation();
+		int cos_coeff = 1;
+		int sin_coeff = 1;
+		Double radian;
+		
+		for(int i = 0; i < obstructions.size(); i++){
+			obstructions.get(i).drawShape(gc);
+		}
+		
+		//Draw Orientation
+		if (adj_angle >= 360){
+			cos_coeff = 1;
+			sin_coeff = -1;
+			adj_angle = 90 - adj_angle % 360;
+			
+		//object is north and west, --
+		}else if(adj_angle >= 270){
+			cos_coeff = -1;
+			sin_coeff = -1;
+			adj_angle = adj_angle - 270;
+			
+		} else if(adj_angle <= -1){
+			cos_coeff = -1;
+			sin_coeff = -1;
+			adj_angle = 90 + adj_angle;
+			
+		//object is south and west, +-
+		} else if(adj_angle >= 180){
+			cos_coeff = -1;
+			sin_coeff = 1;
+			adj_angle = 270 - adj_angle;
+			
+		//object is south and east, ++
+		} else if(adj_angle >= 90){
+			cos_coeff = 1;
+			sin_coeff = 1;
+			adj_angle = adj_angle - 90;
+			
+		//object is north and east, -+
+		} else {
+			cos_coeff = 1;
+			sin_coeff = -1;
+			adj_angle = 90 - adj_angle;
+		}
+		radian = Math.toRadians(adj_angle);
+		gc.setStroke(Color.ORANGERED);
+		gc.setLineWidth(2.0);
+		gc.strokeLine(700, 475, 50*cos_coeff*Math.cos(adj_angle) + 700, 50*sin_coeff*Math.sin(adj_angle) + 475);
+		
+		gc.setStroke(Color.BLACK);
+		gc.setFill(Color.GREEN);
+		gc.strokeRect(697, 472, 5, 5);
+		gc.fillRect(698, 473, 3, 3);
 	}
 	
 	private int get_color(int ir)
@@ -266,14 +315,14 @@ public class OutputTextController {
 	   this.mainApp.getPrimaryStage().show();
 	   cmdLineBox.clear();
 	   
-	   draw_map(area_map.getGraphicsContext2D());
+//	   draw_map(area_map.getGraphicsContext2D());
 	   
 	   /*
 	    * Need to receive 4 sets of data
 	    */
 	   //receive ir
 	   received = mainApp.rc.get_response(mainApp.test);
-	   mainApp.getOutputData().add(new TextOutput("<< " + received));
+	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: ir info"));
 	   data = new SensorData(received);
 	   set_sensor(data.getData());
 	   
@@ -282,11 +331,17 @@ public class OutputTextController {
 	   data.add_data(received);
 	   Obstruction[] temp = data.getObstruction();
 	   mainApp.getOutputData().add(new TextOutput("<< " + received));
+	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: object info"));
 	   
 	   /* 	receive position and direction 
 	    *  	use this method to update the positions
 	    */
 	   //position.update_positions(north, south, east, west, orientation);
+	   received = mainApp.rc.get_response(mainApp.test);
+	   data.add_data(received);
+	   position.update_positions(data.get_position());
+	   mainApp.getOutputData().add(new TextOutput("<< " + received));
+	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: position info"));
 	   //testing
 	   if(mainApp.test == 0x01){
 		   
@@ -306,7 +361,8 @@ public class OutputTextController {
 	   
 	   //interpret obstructions based upon sensor data
 	   interpret_obstructions(temp);
-
+	   draw_map(area_map.getGraphicsContext2D());
+	   draw_obstructions(area_map.getGraphicsContext2D());
 	}
 	
 	//based upon other sensor data, inputs data to the obstruction array
@@ -317,9 +373,9 @@ public class OutputTextController {
 		//check to see if the pipe is already in the obstructions, add it if it isn't
 		for(int i = 0; i < data.get_obstr_size(); i++){
 			already_exists = 0;
-			Obstruction temp = new Pipe(obstr[i].get_distance(), obstr[i].get_angle(), obstr[i].get_width());
+			Pipe temp = new Pipe(obstr[i].get_distance(), obstr[i].get_angle(), obstr[i].get_width());
 			Point location = calculate_location(temp);
-			((Pipe)temp).set_point(location.x, location.y);
+			temp.set_point(location.x, location.y);
 			//do a check to see if object exists in/near the same location
 			for(int j = 0; j < obstructions.size(); j++){
 				if(obstructions.get(j).get_type().getValue() == ObstructionType.LARGE_PIPE.getValue()){
@@ -336,6 +392,7 @@ public class OutputTextController {
 				}
 			}
 			if(already_exists != 1){
+				temp.set_point(calculate_location(temp));
 				obstructions.add(temp);
 			}
 		}

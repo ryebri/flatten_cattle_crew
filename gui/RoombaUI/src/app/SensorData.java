@@ -23,6 +23,7 @@ public class SensorData {
 	private int data[];
 	private Obstruction obstr[];
 	private int obstr_size;
+	private int position[];
 	private int sensors[];
 	
 	public int flag_data_done;
@@ -35,6 +36,7 @@ public class SensorData {
 	public SensorData(String json){
 		flag_data_done = 0;
 		obstr_size = 0;
+		position = new int[5];
 		str_to_obj(json);
 	}
 	
@@ -57,6 +59,10 @@ public class SensorData {
 	
 	public int get_obstr_size(){
 		return obstr_size;
+	}
+	
+	public int[] get_position(){
+		return position;
 	}
 	
 	
@@ -130,7 +136,22 @@ public class SensorData {
 			//{"object": {[distance, angle, width], [...]}}
 			//{"object": {[018, 032, 020], [028, 006, 030]}}
 		} else if(name.compareTo("position") == 0){
-			//{"position": {[NORTH, SOUTH, EAST, WEST]}
+			//{"position": {[NORTH,SOUTH,EAST,WEST,orientation]}
+			position = new int[5];
+			while(json.charAt(i)!= '['){
+				i++;
+			}
+			i++;
+			for(int j = 0; j < 5; j++){
+				if(json.charAt(i)==']' || json.charAt(i) == '}'){
+					break;
+				} else if(json.charAt(i) == ','){
+					i++;
+				}
+				temp = Character.getNumericValue(json.charAt(i))*100 + Character.getNumericValue(json.charAt(i+1))*10 + Character.getNumericValue(json.charAt(i+2));
+				position[j] = temp;
+				i+=3;
+			}
 		} else if(name.compareTo("sensors") == 0){
 			//{"sensors": {[BUMP_LEFT, BUMP_RIGHT, CLIFF_SENSOR]}
 			flag_data_done = 1;

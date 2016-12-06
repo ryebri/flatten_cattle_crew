@@ -33,6 +33,13 @@ public class Position {
 		set_curr_position((x_start - north + south), (y_start - west + east));
 		this.orientation = orientation;
 	}
+	public void update_positions(int[] pos){
+		//may need to have more logic here if the robot does not take care of things
+		set_total_traveled(pos[0], pos[1], pos[2], pos[3]);
+		set_prev_position(curr_position.x, curr_position.y);
+		set_curr_position((x_start - pos[0] + pos[1]), (y_start - pos[3] + pos[2]));
+		this.orientation = pos[4];
+	}
 	
 	/*
 	 * getters
@@ -51,6 +58,14 @@ public class Position {
 	
 	public int get_orientation(){
 		return orientation;
+	}
+	
+	public int get_start_x(){
+		return x_start;
+	}
+	
+	public int get_start_y(){
+		return y_start;
 	}
 	
 	/*
