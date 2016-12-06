@@ -23,8 +23,8 @@ public class SensorData {
 	private int data[];
 	private Obstruction obstr[];
 	private int obstr_size;
-	private int position[];
-	private int sensors[];
+	private int position[];	//[North, South, East, West, orientation]
+	private int sensors[];	//[cliff_left, cliff_leftfront, cliff_rightfront, cliff_right, bumper]
 	
 	public int flag_data_done;
 	
@@ -37,6 +37,7 @@ public class SensorData {
 		flag_data_done = 0;
 		obstr_size = 0;
 		position = new int[5];
+		sensors = new int[5];
 		str_to_obj(json);
 	}
 	
@@ -67,6 +68,7 @@ public class SensorData {
 	
 	
 	private void str_to_obj(String json){
+		flag_data_done = 0;
 		int i = 0, index = -1, temp = 0;
 		StringBuilder builder = new StringBuilder();
 		while(json.charAt(i) != '\"')
@@ -153,7 +155,22 @@ public class SensorData {
 				i+=3;
 			}
 		} else if(name.compareTo("sensors") == 0){
-			//{"sensors": {[BUMP_LEFT, BUMP_RIGHT, CLIFF_SENSOR]}
+			//{"sensors": {[cliff_left, cliff_leftfront, cliff_rightfront, cliff_right, bumper]}
+			sensors = new int[5];
+			while(json.charAt(i)!= '['){
+				i++;
+			}
+			i++;
+			for(int j = 0; j < 5; j++){
+				if(json.charAt(i)==']' || json.charAt(i) == '}'){
+					break;
+				} else if(json.charAt(i) == ','){
+					i++;
+				}
+				temp = Character.getNumericValue(json.charAt(i))*100 + Character.getNumericValue(json.charAt(i+1))*10 + Character.getNumericValue(json.charAt(i+2));
+				sensors[j] = temp;
+				i+=3;
+			}
 			flag_data_done = 1;
 		} else {
 			data = null;

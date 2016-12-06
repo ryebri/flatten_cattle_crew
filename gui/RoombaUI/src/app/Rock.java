@@ -10,7 +10,7 @@ public class Rock extends Obstruction {
 	private Point point;
 	
 	public Rock(){
-		super(0, 0, 0);
+		super(16, 0, 0);
 		set_type(ObstructionType.ROCK);
 		point = new Point();
 	}

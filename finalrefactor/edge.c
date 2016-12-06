@@ -51,14 +51,16 @@ int main(){
 			timer_waitMillis(50);
 
 
-		sprintf(send_string, "{\"sensors\":[%03d, %03d, %03d, %03d, %03d]}\n\0",cliffleftsurface(&bot), cliffleftfrontsurface(&bot),
-				cliffrightfrontsurface(&bot), cliffrightsurface(&bot), bump(&bot) );
-		uart_sendStr(send_string);
+
 		if(((cliffleftsurface(&bot) || cliffleftfrontsurface(&bot) || cliffrightfrontsurface(&bot) || cliffrightsurface(&bot)) == (0 || 2 || 4))) {
 			//stop wheels!
 			oi_setWheels(0,0);
 
 		}
+		sprintf(send_string, "{\"sensors\": [%03d, %03d, %03d, %03d, %03d]}\n\0",cliffleftsurface(&bot), cliffleftfrontsurface(&bot),
+			cliffrightfrontsurface(&bot), cliffrightsurface(&bot), bump(&bot) );
+			
+		uart_sendStr(send_string);
 		timer_waitMillis(50);
 
 		//oi_free(sensor_data);

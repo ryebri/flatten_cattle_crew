@@ -84,7 +84,7 @@ public class MainApp extends Application {
             primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>(){
             	public void handle(WindowEvent we) {
             		try {
-            			if(test == 0x00)
+            			if(test == 0x01)
             			{
             				rc.close();
             			}

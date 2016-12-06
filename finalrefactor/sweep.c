@@ -21,10 +21,10 @@ void do_sweep(botdata_t *bdata){
 	{
 	//part 2 ir stuff
 		ir_dist = get_distance();
-		timer_waitMillis(10);
+		timer_waitMillis(3);
 
 		ir_dist2 = get_distance();
-		timer_waitMillis(10);
+		timer_waitMillis(3);
 
 		ir_dist3 = get_distance();
 
@@ -44,7 +44,7 @@ void do_sweep(botdata_t *bdata){
 //		sprintf(send_string, "%d\t\t%d\r\n\0", (int)i, (int)ir_dist);
 //		uart_sendStr(send_string);
 		interpret_buttons(1);
-		timer_waitMillis(50);
+		timer_waitMillis(10);
 
 	}
 }
@@ -130,6 +130,8 @@ void sendscandata(botdata_t *bdata){
 				send_string[j] = '}';
 				j++;
 				send_string[j] = '\n';
+				j++;
+				send_string[j] = '\0';
 			} else {
 				send_string[j] = ',';
 			}
@@ -231,6 +233,8 @@ void find_width(botdata_t *bdata, state_t volatile *state,volatile unsigned int 
 	send_string[j] = '}';
 	j++;
 	send_string[j] = '\n';
+	j++;
+	send_string[j] = '\0';
 
 	uart_sendStr(send_string);
 }

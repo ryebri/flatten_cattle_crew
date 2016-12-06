@@ -8,6 +8,7 @@ import app.Obstruction;
 import app.Obstruction.ObstructionType;
 import app.Pipe;
 import app.Position;
+import app.Rock;
 import app.SensorData;
 import app.model.TextOutput;
 import javafx.beans.value.ChangeListener;
@@ -136,11 +137,11 @@ public class OutputTextController {
 //		gc.setLineWidth(1);
 //		gc.strokeLine(20, 0, 20, sensor_map.getHeight());
 		int line_width = (int)sensor_map.getWidth()/181;
-		for(int i = 0; i < 180; i++)
+		for(int i = 179; i > -1; i--)
 		{
 			gc.setStroke(colors[ir_reading[i]]);
 			gc.setLineWidth(line_width);
-			gc.strokeLine(i*line_width+line_width, 0, i*line_width+line_width, sensor_map.getHeight());
+			gc.strokeLine((180 - i)*line_width+line_width, 0, (180 - i)*line_width+line_width, sensor_map.getHeight());
 		}
 	}
 	
@@ -148,7 +149,7 @@ public class OutputTextController {
 	public void set_sensor(int[] ir_sensor)
 	{
 		ir_reading = ir_sensor;
-		for(int i = 179; i > -1; i--)
+		for(int i = 0; i < 180; i++)
 		{
 			ir_reading[i] = get_color(ir_sensor[i]);
 		}
@@ -243,7 +244,7 @@ public class OutputTextController {
 		radian = Math.toRadians(adj_angle);
 		gc.setStroke(Color.ORANGERED);
 		gc.setLineWidth(2.0);
-		gc.strokeLine(700, 475, 50*cos_coeff*Math.cos(adj_angle) + 700, 50*sin_coeff*Math.sin(adj_angle) + 475);
+		gc.strokeLine(700, 475, 50*cos_coeff*Math.cos(radian) + 700, 50*sin_coeff*Math.sin(radian) + 475);
 		
 		gc.setStroke(Color.BLACK);
 		gc.setFill(Color.GREEN);
@@ -342,6 +343,12 @@ public class OutputTextController {
 	   position.update_positions(data.get_position());
 	   mainApp.getOutputData().add(new TextOutput("<< " + received));
 	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: position info"));
+	   
+	   //receive other sensor data
+	   received = mainApp.rc.get_response(mainApp.test);
+	   data.add_data(received);
+	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: bot sensors"));
+	   //interpret obstructions based upon sensor data
 	   //testing
 	   if(mainApp.test == 0x01){
 		   
@@ -357,9 +364,7 @@ public class OutputTextController {
 	  
 	   
 	   
-	   //receive other sensor data
-	   
-	   //interpret obstructions based upon sensor data
+
 	   interpret_obstructions(temp);
 	   draw_map(area_map.getGraphicsContext2D());
 	   draw_obstructions(area_map.getGraphicsContext2D());
@@ -398,7 +403,7 @@ public class OutputTextController {
 		}
 		
 		//add way to interpret rocks/lines/holes
-		
+		interpret_bot_sensors();
 		
 	}
 	
@@ -462,6 +467,78 @@ public class OutputTextController {
 		p.setLocation((p.x + position.get_curr_position().x), (p.y + position.get_curr_position().y));
 		
 		return p;
+	}
+	
+	private void interpret_bot_sensors(){
+		int sensors[] = data.getSensors();
+		int adj_angle = position.get_orientation();
+		int cos_coeff = 1, sin_coeff = 1;
+		Double radian;
+		
+		//interpret rocks
+		Rock temp = new Rock();
+		switch(sensors[4]){
+		case 0:
+			//make rock @ 45 degree angle to the left
+			adj_angle -= 45;
+			break;
+			
+		case 1:
+			//make rock @ 45 degree angle to the right
+			adj_angle += 45;
+			break;
+			
+		default:
+			break;
+				
+		}
+		if(sensors[4] != 3){
+			if (adj_angle >= 360){
+				cos_coeff = 1;
+				sin_coeff = -1;
+				adj_angle = 90 - adj_angle % 360;
+				
+			//object is north and west, --
+			}else if(adj_angle >= 270){
+				cos_coeff = -1;
+				sin_coeff = -1;
+				adj_angle = adj_angle - 270;
+				
+			} else if(adj_angle <= -1){
+				cos_coeff = -1;
+				sin_coeff = -1;
+				adj_angle = 90 + adj_angle;
+				
+			//object is south and west, +-
+			} else if(adj_angle >= 180){
+				cos_coeff = -1;
+				sin_coeff = 1;
+				adj_angle = 270 - adj_angle;
+				
+			//object is south and east, ++
+			} else if(adj_angle >= 90){
+				cos_coeff = 1;
+				sin_coeff = 1;
+				adj_angle = adj_angle - 90;
+				
+			//object is north and east, -+
+			} else {
+				cos_coeff = 1;
+				sin_coeff = -1;
+				adj_angle = 90 - adj_angle;
+			}
+			radian = Math.toRadians(adj_angle);
+			
+			temp.set_point((int)(17*cos_coeff*Math.cos(radian) + position.get_curr_position().x), (int)(17*sin_coeff*Math.sin(radian) + position.get_curr_position().y));
+		}
+		
+		if(temp.get_point().x != 0 && temp.get_point().y != 0){
+			obstructions.add(temp);
+		}
+		
+		//interpret line sensors
+		
+		//just interpret the values, if any have something add either a line or a hole, or the final thing
 	}
 	
 	
