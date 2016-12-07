@@ -7,7 +7,8 @@
 #include "botdata.h"
 #include <math.h>
 #include "open_interface.h"
-
+#include "uart.h"
+#include "movement.h"
 
 void botdata_init(botdata_t *bdata){
 	int i;
@@ -85,78 +86,61 @@ void send_pulse()
 
 
 
-void recieve_command(botpos_t *bot){
+void recieve_command(botdata_t *bdata, botpos_t *bot){
 int i = 0;
 char commands[2];
 	//weird registers that wont read until data arrives...
 	for( i = 0; i < 2; i++){
 		commands[i] = (char)uart_receive();
 	}
+	bdata->commands = (int)commands;
 
-	//
-	if(commands[0] & 0x01){ 		//left speed
-		//call function/s
-	}
-	else{
-		// other functions
-	}
-	if(commands[1] & 0x02){ 		//left speed
-		//call function/s
-	}
-	else{
-		// other functions
-	}
 
-	if(commands[2] & 0x04){ 		//Backwards left
+	if(bdata->commands & 0x02){ 		//left speed
+		interpret_movement(bot,bdata,bdata->commands & 0x02,bdata->commands & 0x10);
+	}
+	else if(bdata->commands & 0x04){ 		//left reverse
+		interpret_movement(bot,bdata,(bdata->commands & 0x04) * -1,(bdata->commands & 0x20));
+	}
+	if(bdata->commands & 0x10){ 		//right speed
+		interpret_movement(bot,bdata,bdata->commands & 0x02,bdata->commands & 0x10);
 		//call function/s
 	}
-	else{
-		// other functions
+	if(bdata->commands & 0x20){ 		//right reverse
+		interpret_movement(bot,bdata,(bdata->commands & 0x04) * -1,(bdata->commands & 0x20));
+		//call function/s
 	}
 
-	if(commands[3] & 0x08){ 		//right speed
-		//call function/s
-	}
-	else{
-		// other functions
-	}
-
-	if(commands[4] & 0x10){ 		//right speed
-		//call function/s
-	}
-	else{
-		// other functions
-	}
-	if(commands[0] & 0x20){ 		//backwards right speed
+	if(bdata->commands & 0x40){ 		//start scan
 		//call function/s
 	}
 	else{
 		// other functions
 	}
 
-	if(commands[0] & 0x40){ 		//start scan
+	if(bdata->commands & 0x80){ 		//free collision alert
 		//call function/s
 	}
 	else{
 		// other functions
 	}
 
-	if(commands[0] & 0x200){ 		//90 degree LEFT turn
-		turn(&bot,90);
+	if(bdata->commands & 0x200){ 		//90 degree left turn
+		//call function/s
 	}
 	else{
 		// other functions
 	}
 
-	if(commands[0] & 0x400){ 		//90 degree RIGHT turn
-		turn(&bot,-90);
+	if(bdata->commands & 0x400){ 		//90 degree right turn
+		turn(bot,90);
 	}
 	else{
 		// other functions
 	}
 
-	if(commands[0] & 0x800){ 		//stop
-		oi_setWheels(0,0);
+	if(bdata->commands & 0x800){ 		//stop
+		turn(bot,-90);
 	}
 	else{
 		// other functions

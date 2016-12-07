@@ -79,21 +79,9 @@ int main(void){
 
 
 //	rec_string[i] = uart_receive();		//when using putty
-	/*
-	while(1)
-	{
-		rec_string[i] = (char)uart_receive();
-		if(rec_string[i] == '\0' ||rec_string[i] =='\r' ||rec_string[i] == '\n')
-		{
-			if(strcmp(rec_string, "start") == 0)
-			{
-				break;
-			}
-		}
 
-		i++;
-	}
-	*/
+
+
 	move_servo(0);
 	timer_waitMillis(1000);
 	state = LOW;

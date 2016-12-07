@@ -22,7 +22,7 @@ int getTo(int targetForward, int targetRight, oi_t *sensor){ // attempts to get 
 	//botpos_init(&b);
 
 	while(b.forward < targetForward){
-		r = forward(&b, targetForward - b.forward);
+		//r = forward(&b, targetForward - b.forward);
 		switch(r){
 		case bothBump:
 		case leftBump:
@@ -39,9 +39,9 @@ int getTo(int targetForward, int targetRight, oi_t *sensor){ // attempts to get 
 }
 
 int avoid(botpos_t *b,int dir){ // avoids in the dir direction (-1 for right 1 for left
-	forward(b,-150);
+	//forward(b,-150);
 	turn(b, 90 * dir);
-	forward(b,250);
+	//forward(b,250);
 	turn(b, -90 * dir);
 	return 0;
 }

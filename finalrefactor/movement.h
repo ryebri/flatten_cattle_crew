@@ -9,7 +9,7 @@
 #define MOVEMENT_H_
 #include <stdlib.h>
 #include "open_interface.h"
-
+#include "botdata.h"
 
 typedef enum rtvalue {leftBump,rightBump,bothBump,finish} rtvalue_t;
 
@@ -21,10 +21,10 @@ typedef struct botpos{
 	oi_t *sensor_data;
 }botpos_t;
 
-rtvalue_t forward(botpos_t *b, int dir);// moves the bot forward to "distance" mm untill it reaches its destination or bumps into something
+rtvalue_t forward(botpos_t *b, botdata_t *bot, int dir);// moves the bot forward to "distance" mm untill it reaches its destination or bumps into something
 int turn(botpos_t *b, int direction); // direction determens the direction to turn (right is negitive, left is positive) the value is the number of degrees to turn
 void botpos_init(botpos_t *b);
-void interpret_movement(botpos_t *b,int left, int right);
+void interpret_movement(botpos_t *b, botdata_t *bdata, int left, int right);
 
 
 

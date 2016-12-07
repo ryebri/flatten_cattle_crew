@@ -10,16 +10,15 @@
 #include "math.h"
 
 void botpos_init(botpos_t *b){
-	int i;
 	b->angle = 0;
 	b->forward = 0;
 	b->right = 0;
 }
 
-void interpret_movement(botpos_t *b,int left, int right){
+void interpret_movement(botpos_t *b, botdata_t *bdata, int left, int right){
 	if(left < 0){
 		if(right < 0){
-			forward(b,1);
+			forward(b,bdata,1);
 		}
 		else{
 			turn(b,1);
@@ -27,7 +26,7 @@ void interpret_movement(botpos_t *b,int left, int right){
 	}
 	if(left > 0){
 		if(right > 0){
-			forward(b,1);
+			forward(b,bdata,1);
 		}
 		else{
 			turn(b,-1);
@@ -43,7 +42,7 @@ void interpret_movement(botpos_t *b,int left, int right){
 }
 
 
-rtvalue_t forward(botpos_t *b, int dir){// moves the bot forward to "distance" mm untill it reaches its destination or bumps into something
+rtvalue_t forward(botpos_t *b,botdata_t *bot, int dir){// moves the bot forward to "distance" mm untill it reaches its destination or bumps into something
 	if(dir < 0){
 		oi_setWheels(0,0);
 		oi_setWheels(-100,-100);
@@ -66,13 +65,12 @@ rtvalue_t forward(botpos_t *b, int dir){// moves the bot forward to "distance" m
 		oi_setWheels(0,0);
 		return rightBump;
 	}
-	if(((cliffleftsurface(&bot) > 0       ||
-		 cliffleftfrontsurface(&bot) > 0  ||
-		 cliffrightfrontsurface(&bot) > 0 ||
-		 cliffrightsurface(&bot) > 0)){
+	if((cliffleftsurface(bot) > 0       ||
+		 cliffleftfrontsurface(bot) > 0  ||
+		 cliffrightfrontsurface(bot) > 0 ||
+		 cliffrightsurface(bot) > 0)){
 		//stop wheels!
 		oi_setWheels(0,0);
-
 	}
 	/*
 	if(b->edges[0] == 1){
