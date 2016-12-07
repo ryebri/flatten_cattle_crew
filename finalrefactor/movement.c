@@ -8,6 +8,7 @@
 #include "movement.h"
 #include "lcd.h"
 #include "math.h"
+#include "floorsensor.h"
 
 void botpos_init(botpos_t *b){
 	b->angle = 0;
@@ -24,7 +25,7 @@ void interpret_movement(botpos_t *b, botdata_t *bdata, int left, int right){
 			turn(b,1);
 		}
 	}
-	if(left > 0){
+	else if(left > 0){
 		if(right > 0){
 			forward(b,bdata,1);
 		}
@@ -33,10 +34,10 @@ void interpret_movement(botpos_t *b, botdata_t *bdata, int left, int right){
 		}
 	}
 	// we know left must be 0
-	if(right < 0){
+	else if(right < 0){
 		turn(b,1);
 	}
-	if(right > 0){
+	else if(right > 0){
 		turn(b,-1);
 	}
 }
@@ -65,10 +66,10 @@ rtvalue_t forward(botpos_t *b,botdata_t *bot, int dir){// moves the bot forward 
 		oi_setWheels(0,0);
 		return rightBump;
 	}
-	if((cliffleftsurface(bot) > 0       ||
-		 cliffleftfrontsurface(bot) > 0  ||
-		 cliffrightfrontsurface(bot) > 0 ||
-		 cliffrightsurface(bot) > 0)){
+	if((cliffleftsurface(b) > 0       ||
+		 cliffleftfrontsurface(b) > 0  ||
+		 cliffrightfrontsurface(b) > 0 ||
+		 cliffrightsurface(b) > 0)){
 		//stop wheels!
 		oi_setWheels(0,0);
 	}
@@ -115,7 +116,7 @@ int turn(botpos_t *b, int direction){ // direction determens the direction to tu
 		oi_update(b->sensor_data);
 		data +=  abs(b->sensor_data->angle);
 		b->angle += b->sensor_data->angle;
-		if(b->angle > 360 || b->angle < -360){
+		if(b->angle >= 360 || b->angle <= -360){
 			b->angle = 0;
 		}
 	}
