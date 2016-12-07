@@ -29,7 +29,7 @@ public class MainApp extends Application {
     public RoombaComm rc;
     private OutputTextController controller;
 //    public ResizableCanvas sensor_map;
-	public final char test = (char)0x01;	//change to 0x00 when in actual use
+	public final char test = (char)0x00;	//change to 0x00 when in actual use, 0x01 for testing
     
     public MainApp(){
     	/*
@@ -84,7 +84,7 @@ public class MainApp extends Application {
             primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>(){
             	public void handle(WindowEvent we) {
             		try {
-            			if(test == 0x01)
+            			if(test == 0x00)
             			{
             				rc.close();
             			}

@@ -23,6 +23,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 public class OutputTextController {
 	@FXML
@@ -159,6 +160,34 @@ public class OutputTextController {
 		gc.clearRect(0, 0, sensor_map.getWidth(), sensor_map.getHeight());	//use this to clear the canvas
 		
 		drawShapes(gc);
+	}
+	
+	//draw boxes and input the distance/width associated with the object
+	private void draw_object_width(GraphicsContext gc){
+		int y_value = (int)sensor_map.getHeight() - 30;	//spacing on the y axis
+		
+		for(int i = 0; i < data.get_obstr_size(); i++){
+			int x_value = (180 - data.getObstruction()[i].get_angle() - data.getObstruction()[i].get_width()/4) *((int)sensor_map.getWidth()/181);
+			if(x_value < 0){
+				x_value = 0;
+			} else if(x_value > (sensor_map.getWidth() - 45)){
+				x_value = (int)(sensor_map.getWidth() - 44);
+			}
+			//draw the rectangle background
+			gc.setLineWidth(1.0);
+			gc.setStroke(Color.WHITE);
+			gc.setFill(Color.BLACK);
+			gc.fillRect(x_value, y_value, 40, 30);
+			gc.strokeRect(x_value, y_value, 40, 30);
+			
+			//set text
+			gc.setFill(Color.WHITE);
+			gc.setFont(Font.getDefault());
+			String s = String.format("d: %d", data.getObstruction()[i].get_distance());
+			gc.fillText(s, x_value + 5, y_value + 13);
+			s = String.format("w: %d", data.getObstruction()[i].get_width());
+			gc.fillText(s, x_value + 5, y_value + 26);
+		}
 	}
 	
 	// For the birds eye view map
@@ -328,63 +357,10 @@ public class OutputTextController {
 	   this.mainApp.getPrimaryStage().show();
 	   cmdLineBox.clear();
 	   receive();
-	   
-//	   draw_map(area_map.getGraphicsContext2D());
-
-	   //ALL MOVED TO METHOD receive()
-//	   /*
-//	    * Need to receive 4 sets of data
-//	    */
-//	   //receive ir
-//	   received = mainApp.rc.get_response(mainApp.test);
-//	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: ir info"));
-//	   data = new SensorData(received);
-//	   set_sensor(data.getData());
-//	   
-//	   //receive objects
-//	   received = mainApp.rc.get_response(mainApp.test);
-//	   data.add_data(received);
-//	   Obstruction[] temp = data.getObstruction();
-//	   mainApp.getOutputData().add(new TextOutput("<< " + received));
-//	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: object info"));
-//	   
-//	   /* 	receive position and direction 
-//	    *  	use this method to update the positions
-//	    */
-//	   //position.update_positions(north, south, east, west, orientation);
-//	   received = mainApp.rc.get_response(mainApp.test);
-//	   data.add_data(received);
-//	   position.update_positions(data.get_position());
-//	   mainApp.getOutputData().add(new TextOutput("<< " + received));
-//	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: position info"));
-//	   
-//	   //receive other sensor data
-//	   received = mainApp.rc.get_response(mainApp.test);
-//	   data.add_data(received);
-//	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: bot sensors"));
-//	   //interpret obstructions based upon sensor data
-//	   //testing
-//	   if(mainApp.test == 0x01){
-//		   
-//		   position.set_orientation(0);
-//		   Pipe ob1 = new Pipe(40, 65, 6);
-//		   ob1.set_point(calculate_location(ob1));
-//		   ob1.drawShape(area_map.getGraphicsContext2D());
-//		   
-//		   Pipe ob2 = new Pipe(43, 120, 2);
-//		   ob2.set_point(calculate_location(ob2));
-//		   ob2.drawShape(area_map.getGraphicsContext2D());
-//	   }
-//	  
-//	   
-//	   
-//
-//	   interpret_obstructions(temp);
-//	   draw_map(area_map.getGraphicsContext2D());
-//	   draw_obstructions(area_map.getGraphicsContext2D());
 	}
+	
 	/*
-	 *used for the controller 
+	 *used to receive data
 	 */
 	public void receive(){
 		String received;
@@ -423,23 +399,27 @@ public class OutputTextController {
 	   received = mainApp.rc.get_response(mainApp.test);
 	   data.add_data(received);
 	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: bot sensors"));
-	   //interpret obstructions based upon sensor data
+
 	   //testing
 	   if(mainApp.test == 0x01){
+		   String s = "{\"objects\": [040,065,006], [043,120,002]}\n\0";
+		   data.add_data(s);
+		   temp = data.getObstruction();
 		   
-		   position.set_orientation(90);
+		   position.set_orientation(270);
 		   Pipe ob1 = new Pipe(40, 65, 6);
 		   ob1.set_point(calculate_location(ob1));
-		   ob1.drawShape(area_map.getGraphicsContext2D());
+//		   obstructions.add(ob1);
+//		   ob1.drawShape(area_map.getGraphicsContext2D());
 		   
 		   Pipe ob2 = new Pipe(43, 120, 2);
 		   ob2.set_point(calculate_location(ob2));
-		   ob2.drawShape(area_map.getGraphicsContext2D());
+//		   obstructions.add(ob2);
+//		   ob2.drawShape(area_map.getGraphicsContext2D());
 	   }
 	  
-	   
-	   
-
+	   //interpret obstructions based upon sensor data
+	   draw_object_width(sensor_map.getGraphicsContext2D());
 	   interpret_obstructions(temp);
 	   draw_map(area_map.getGraphicsContext2D());
 	   draw_obstructions(area_map.getGraphicsContext2D());
@@ -473,15 +453,18 @@ public class OutputTextController {
 				}
 			}
 			if(already_exists != 1){
-				temp.set_point(calculate_location(temp));
+//				temp.set_point(calculate_location(temp));
 				obstructions.add(temp);
 			}
 		}
 		
 		//add way to interpret rocks/lines/holes
 		if(mainApp.test == 0x01){
-			data.add_data("{\"sensors\": [001,001,001,002,003]}\n\0");
+			String sensor_s = "{\"sensors\": [000,001,001,001,003]}\n\0";
+			data.add_data(sensor_s);
+			mainApp.getOutputData().add(new TextOutput("<< " + sensor_s));
 		}
+		
 		interpret_bot_sensors();
 		
 	}
@@ -523,7 +506,8 @@ public class OutputTextController {
 		} else if(adj_angle >= 180){
 			cos_coeff = -1;
 			sin_coeff = 1;
-			adj_angle = 270 - adj_angle;
+//			adj_angle = 270 - adj_angle;	//adj_angle - 180?
+			adj_angle = (90 - (adj_angle - 180));
 			
 		//object is south and east, ++
 		} else if(adj_angle >= 90){
@@ -693,7 +677,7 @@ public class OutputTextController {
 			//North
 			} else if(sensors[0] == 0 && (adj_angle > 85 && adj_angle < 95 )){
 				l.set_p1(0, position.get_curr_position().y - 17);
-				l.set_p1((int)area_map.getWidth(), position.get_curr_position().y - 17);
+				l.set_p2((int)area_map.getWidth(), position.get_curr_position().y - 17);
 				
 			//South
 			} else if(sensors[0] == 0 && (adj_angle > 265 && adj_angle < 275)){
@@ -706,7 +690,7 @@ public class OutputTextController {
 				l.set_p2(position.get_curr_position().x + 17, (int)area_map.getHeight());
 			
 			//West
-			} else if(sensors[3] == 0 && (adj_angle > 175 && adj_angle > 185)){
+			} else if(sensors[3] == 0 && (adj_angle > 175 && adj_angle < 185)){
 				l.set_p1(position.get_curr_position().x - 17, 0);
 				l.set_p2(position.get_curr_position().x - 17, (int)area_map.getHeight());
 			
@@ -718,12 +702,12 @@ public class OutputTextController {
 			//North
 			} else if(sensors[3] == 0 && (adj_angle > 265 && adj_angle < 275)){
 				l.set_p1(0, position.get_curr_position().y - 17);
-				l.set_p1((int)area_map.getWidth(), position.get_curr_position().y - 17);
+				l.set_p2((int)area_map.getWidth(), position.get_curr_position().y - 17);
 			
 			//North
 			} else if(adj_angle > 355 || adj_angle < 5){
 				l.set_p1(0, position.get_curr_position().y - 17);
-				l.set_p1((int)area_map.getWidth(), position.get_curr_position().y - 17);
+				l.set_p2((int)area_map.getWidth(), position.get_curr_position().y - 17);
 				
 			//South
 			} else if(adj_angle > 175 && adj_angle < 185){
