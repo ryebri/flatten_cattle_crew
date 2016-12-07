@@ -23,7 +23,7 @@ public class SensorData {
 	private int data[];
 	private Obstruction obstr[];
 	private int obstr_size;
-	private int position[];	//[North, South, East, West, orientation]
+	private int position[];	//[x,y,orientation] --new [North, South, East, West, orientation] --old
 	private int sensors[];	//[cliff_left, cliff_leftfront, cliff_rightfront, cliff_right, bumper]
 	
 	public int flag_data_done;
@@ -139,6 +139,7 @@ public class SensorData {
 			//{"object": {[018, 032, 020], [028, 006, 030]}}
 		} else if(name.compareTo("position") == 0){
 			//{"position": {[NORTH,SOUTH,EAST,WEST,orientation]}
+			//new version {"position": [x,y,orientation]}
 			position = new int[5];
 			while(json.charAt(i)!= '['){
 				i++;
@@ -154,8 +155,11 @@ public class SensorData {
 				position[j] = temp;
 				i+=3;
 			}
+
+			
 		} else if(name.compareTo("sensors") == 0){
-			//{"sensors": {[cliff_left, cliff_leftfront, cliff_rightfront, cliff_right, bumper]}
+			//{"sensors": [cliff_left, cliff_leftfront, cliff_rightfront, cliff_right, bumper]}
+			
 			sensors = new int[5];
 			while(json.charAt(i)!= '['){
 				i++;

@@ -29,7 +29,7 @@ public class MainApp extends Application {
     public RoombaComm rc;
     private OutputTextController controller;
 //    public ResizableCanvas sensor_map;
-	public final char test = (char)0x00;	//change to 0x00 when in actual use
+	public final char test = (char)0x01;	//change to 0x00 when in actual use
     
     public MainApp(){
     	/*

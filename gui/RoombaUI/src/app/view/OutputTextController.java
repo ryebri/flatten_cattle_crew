@@ -3,6 +3,8 @@ package app.view;
 import java.awt.Point;
 import java.util.ArrayList;
 
+import app.Hole;
+import app.Line;
 import app.MainApp;
 import app.Obstruction;
 import app.Obstruction.ObstructionType;
@@ -242,10 +244,20 @@ public class OutputTextController {
 			adj_angle = 90 - adj_angle;
 		}
 		radian = Math.toRadians(adj_angle);
-		gc.setStroke(Color.ORANGERED);
-		gc.setLineWidth(2.0);
+		
+		//background for the compass
+		gc.setStroke(Color.WHITE);
+		gc.setFill(Color.WHITE);
+		gc.setLineWidth(1.0);
+		gc.strokeOval(650, 425, 100, 100);
+		gc.fillOval(650, 425, 100, 100);
+		
+		//draw compass
+		gc.setStroke(Color.RED);
+		gc.setLineWidth(3.0);
 		gc.strokeLine(700, 475, 50*cos_coeff*Math.cos(radian) + 700, 50*sin_coeff*Math.sin(radian) + 475);
 		
+		//draw middle of compass
 		gc.setStroke(Color.BLACK);
 		gc.setFill(Color.GREEN);
 		gc.strokeRect(697, 472, 5, 5);
@@ -315,8 +327,71 @@ public class OutputTextController {
 //	   drawShapes(sensor_map.getGraphicsContext2D());
 	   this.mainApp.getPrimaryStage().show();
 	   cmdLineBox.clear();
+	   receive();
 	   
 //	   draw_map(area_map.getGraphicsContext2D());
+
+	   //ALL MOVED TO METHOD receive()
+//	   /*
+//	    * Need to receive 4 sets of data
+//	    */
+//	   //receive ir
+//	   received = mainApp.rc.get_response(mainApp.test);
+//	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: ir info"));
+//	   data = new SensorData(received);
+//	   set_sensor(data.getData());
+//	   
+//	   //receive objects
+//	   received = mainApp.rc.get_response(mainApp.test);
+//	   data.add_data(received);
+//	   Obstruction[] temp = data.getObstruction();
+//	   mainApp.getOutputData().add(new TextOutput("<< " + received));
+//	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: object info"));
+//	   
+//	   /* 	receive position and direction 
+//	    *  	use this method to update the positions
+//	    */
+//	   //position.update_positions(north, south, east, west, orientation);
+//	   received = mainApp.rc.get_response(mainApp.test);
+//	   data.add_data(received);
+//	   position.update_positions(data.get_position());
+//	   mainApp.getOutputData().add(new TextOutput("<< " + received));
+//	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: position info"));
+//	   
+//	   //receive other sensor data
+//	   received = mainApp.rc.get_response(mainApp.test);
+//	   data.add_data(received);
+//	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: bot sensors"));
+//	   //interpret obstructions based upon sensor data
+//	   //testing
+//	   if(mainApp.test == 0x01){
+//		   
+//		   position.set_orientation(0);
+//		   Pipe ob1 = new Pipe(40, 65, 6);
+//		   ob1.set_point(calculate_location(ob1));
+//		   ob1.drawShape(area_map.getGraphicsContext2D());
+//		   
+//		   Pipe ob2 = new Pipe(43, 120, 2);
+//		   ob2.set_point(calculate_location(ob2));
+//		   ob2.drawShape(area_map.getGraphicsContext2D());
+//	   }
+//	  
+//	   
+//	   
+//
+//	   interpret_obstructions(temp);
+//	   draw_map(area_map.getGraphicsContext2D());
+//	   draw_obstructions(area_map.getGraphicsContext2D());
+	}
+	/*
+	 *used for the controller 
+	 */
+	public void receive(){
+		String received;
+	   this.mainApp.getPrimaryStage().show();
+	   cmdLineBox.clear();
+	   
+//		   draw_map(area_map.getGraphicsContext2D());
 	   
 	   /*
 	    * Need to receive 4 sets of data
@@ -352,7 +427,7 @@ public class OutputTextController {
 	   //testing
 	   if(mainApp.test == 0x01){
 		   
-		   position.set_orientation(120);
+		   position.set_orientation(90);
 		   Pipe ob1 = new Pipe(40, 65, 6);
 		   ob1.set_point(calculate_location(ob1));
 		   ob1.drawShape(area_map.getGraphicsContext2D());
@@ -368,6 +443,7 @@ public class OutputTextController {
 	   interpret_obstructions(temp);
 	   draw_map(area_map.getGraphicsContext2D());
 	   draw_obstructions(area_map.getGraphicsContext2D());
+		
 	}
 	
 	//based upon other sensor data, inputs data to the obstruction array
@@ -403,6 +479,9 @@ public class OutputTextController {
 		}
 		
 		//add way to interpret rocks/lines/holes
+		if(mainApp.test == 0x01){
+			data.add_data("{\"sensors\": [001,001,001,002,003]}\n\0");
+		}
 		interpret_bot_sensors();
 		
 	}
@@ -539,6 +618,159 @@ public class OutputTextController {
 		//interpret line sensors
 		
 		//just interpret the values, if any have something add either a line or a hole, or the final thing
+		/*
+		 * 0 - white tape/boundary, 1 - normal floor, 2 - extraction, 3 - hole, 4 - error
+		 */
+		int flag = 1;
+		for(int i = 0; i < 4; i++){
+			if(sensors[i] != 1){
+				flag = sensors[i];
+				break;
+			}
+		}
+		adj_angle = position.get_orientation();
+		if(sensors[0] == flag || sensors[3] == flag){
+			if(sensors[0] == flag){
+				adj_angle -= 45;
+			} else {
+				adj_angle +=45;
+			}
+			
+			if (adj_angle >= 360){
+				cos_coeff = 1;
+				sin_coeff = -1;
+				adj_angle = 90 - adj_angle % 360;
+				
+			//object is north and west, --
+			}else if(adj_angle >= 270){
+				cos_coeff = -1;
+				sin_coeff = -1;
+				adj_angle = adj_angle - 270;
+				
+			} else if(adj_angle <= -1){
+				cos_coeff = -1;
+				sin_coeff = -1;
+				adj_angle = 90 + adj_angle;
+				
+			//object is south and west, +-
+			} else if(adj_angle >= 180){
+				cos_coeff = -1;
+				sin_coeff = 1;
+				adj_angle = 270 - adj_angle;
+				
+			//object is south and east, ++
+			} else if(adj_angle >= 90){
+				cos_coeff = 1;
+				sin_coeff = 1;
+				adj_angle = adj_angle - 90;
+				
+			//object is north and east, -+
+			} else {
+				cos_coeff = 1;
+				sin_coeff = -1;
+				adj_angle = 90 - adj_angle;
+			}
+		}
+		radian = Math.toRadians(adj_angle);
+		
+		int delta_x = position.get_start_x() - position.get_curr_position().x;
+		int delta_y = position.get_start_y() - position.get_curr_position().y;
+		adj_angle = position.get_orientation();
+		switch(flag){
+		case 0:
+			Line l = new Line();
+			//West
+			if(sensors[0] == 0 && (adj_angle < 5 || adj_angle > 355)){
+				l.set_p1(position.get_curr_position().x - 17, 0);
+				l.set_p2(position.get_curr_position().x - 17, (int)area_map.getHeight());
+				//add the other side as well?
+				
+			//East
+			} else if(sensors[0] == 0 && (adj_angle > 175 && adj_angle < 185)){
+				l.set_p1(position.get_curr_position().x + 17, 0);
+				l.set_p2(position.get_curr_position().x + 17, (int)area_map.getHeight());
+			
+			//North
+			} else if(sensors[0] == 0 && (adj_angle > 85 && adj_angle < 95 )){
+				l.set_p1(0, position.get_curr_position().y - 17);
+				l.set_p1((int)area_map.getWidth(), position.get_curr_position().y - 17);
+				
+			//South
+			} else if(sensors[0] == 0 && (adj_angle > 265 && adj_angle < 275)){
+				l.set_p1(0, position.get_curr_position().y + 17);
+				l.set_p2((int)area_map.getWidth(), position.get_curr_position().y + 17);
+			
+			//East
+			} else if(sensors[3] == 0 && (adj_angle < 5 || adj_angle > 355)){
+				l.set_p1(position.get_curr_position().x + 17, 0);
+				l.set_p2(position.get_curr_position().x + 17, (int)area_map.getHeight());
+			
+			//West
+			} else if(sensors[3] == 0 && (adj_angle > 175 && adj_angle > 185)){
+				l.set_p1(position.get_curr_position().x - 17, 0);
+				l.set_p2(position.get_curr_position().x - 17, (int)area_map.getHeight());
+			
+			//South
+			} else if(sensors[3] == 0 && (adj_angle > 85 && adj_angle < 95)){
+				l.set_p1(0, position.get_curr_position().y + 17);
+				l.set_p2((int)area_map.getWidth(), position.get_curr_position().y + 17);
+				
+			//North
+			} else if(sensors[3] == 0 && (adj_angle > 265 && adj_angle < 275)){
+				l.set_p1(0, position.get_curr_position().y - 17);
+				l.set_p1((int)area_map.getWidth(), position.get_curr_position().y - 17);
+			
+			//North
+			} else if(adj_angle > 355 || adj_angle < 5){
+				l.set_p1(0, position.get_curr_position().y - 17);
+				l.set_p1((int)area_map.getWidth(), position.get_curr_position().y - 17);
+				
+			//South
+			} else if(adj_angle > 175 && adj_angle < 185){
+				l.set_p1(0, position.get_curr_position().y + 17);
+				l.set_p2((int)area_map.getWidth(), position.get_curr_position().y + 17);
+				
+			//East
+			} else if(adj_angle > 75 && adj_angle < 85){
+				l.set_p1(position.get_curr_position().x + 17, 0);
+				l.set_p2(position.get_curr_position().x + 17, (int)area_map.getHeight());
+				
+			//West
+			} else if(adj_angle > 265 && adj_angle < 285){
+				l.set_p1(position.get_curr_position().x - 17, 0);
+				l.set_p2(position.get_curr_position().x - 17, (int)area_map.getHeight());
+			}
+
+			obstructions.add(l);
+			
+			break;
+		case 3:
+			mainApp.getOutputData().add(new TextOutput("<< " + "EXTRACTION POINT"));
+			break;
+		case 2:
+			Hole h = new Hole();
+			//calculate where to place the hole
+			if(adj_angle < 45 || adj_angle > 325){
+				//add @ location of bot y-60
+				h.set_point(position.get_curr_position().x - 30, (int)position.get_curr_position().y - 60);
+			} else if(adj_angle > 45 && adj_angle < 135){
+				//add @ location y + 30
+				h.set_point(position.get_curr_position().x, position.get_curr_position().y - 30);
+			} else if(adj_angle > 135 && adj_angle < 225){
+				//add @ location
+				h.set_point(position.get_curr_position().x - 30, position.get_curr_position().y);
+			} else if(adj_angle > 225 && adj_angle < 325){
+				//add @ location x - 60, y - 30
+				h.set_point(position.get_curr_position().x - 60, position.get_curr_position().y - 30);
+			}
+			obstructions.add(h);
+			break;
+		case 4:
+			mainApp.getOutputData().add(new TextOutput("<< " + "FloorSensor: Error"));
+			break;
+		default:
+			break;
+		} 
 	}
 	
 	

@@ -26,18 +26,30 @@ public class Position {
 	}
 	
 	//orientation has north at 0
-	public void update_positions(int north, int south, int east, int west, int orientation){
+	public void update_positions(int x, int x_negative, int y, int y_negative, int orientation){
 		//may need to have more logic here if the robot does not take care of things
-		set_total_traveled(north, south, east, west);
+		int new_x, new_y;
+		if(x_negative == 0){
+			new_x = curr_position.x + x;
+		} else {
+			new_x = curr_position.x - x;
+		}
+		
+		if(y_negative == 0){
+			new_y = curr_position.y + y;
+		} else {
+			new_y = curr_position.y - y;
+		}
+		set_total_traveled(x, x_negative, y, y_negative);
 		set_prev_position(curr_position.x, curr_position.y);
-		set_curr_position((x_start - north + south), (y_start - west + east));
+		set_curr_position(new_x, new_y);
 		this.orientation = orientation;
 	}
 	public void update_positions(int[] pos){
 		//may need to have more logic here if the robot does not take care of things
 		set_total_traveled(pos[0], pos[1], pos[2], pos[3]);
 		set_prev_position(curr_position.x, curr_position.y);
-		set_curr_position((x_start - pos[0] + pos[1]), (y_start - pos[3] + pos[2]));
+		set_curr_position(pos);
 		this.orientation = pos[4];
 	}
 	
@@ -79,11 +91,35 @@ public class Position {
 		curr_position.setLocation(x, y);
 	}
 	
-	public void set_total_traveled(int north, int south, int east, int west){
-		total_traveled[CardinalDirection.NORTH.index] = north;
-		total_traveled[CardinalDirection.SOUTH.index] = south;
-		total_traveled[CardinalDirection.EAST.index] = east;
-		total_traveled[CardinalDirection.WEST.index] = west;
+	public void set_curr_position(int position[]){
+		int new_x, new_y;
+		if(position[1] == 0){
+			new_x = curr_position.x + position[0];
+		} else {
+			new_x = curr_position.x - position[0];
+		}
+		
+		if(position[3] == 0){
+			new_y = curr_position.y + position[2];
+		} else {
+			new_y = curr_position.y - position[2];
+		}
+		
+		curr_position.setLocation(new_x, new_y);
+	}
+	
+	public void set_total_traveled(int x, int x_neg, int y, int y_neg){
+		if(x_neg == 0){
+			total_traveled[CardinalDirection.NORTH.index] += x;
+		} else {
+			total_traveled[CardinalDirection.SOUTH.index] += x;
+		}
+		
+		if(y_neg == 0){
+			total_traveled[CardinalDirection.EAST.index] += y;
+		} else {
+			total_traveled[CardinalDirection.WEST.index] += y;
+		}
 	}
 	
 	public void set_orientation(int orientation){
