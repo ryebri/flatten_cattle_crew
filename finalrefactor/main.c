@@ -14,7 +14,7 @@
 
 #include "botdata.h"
 #include "sweep.h"
-
+#include "movement.h"
 void object_send(botdata_t *bdata);
 
 void sonar_init();
@@ -57,10 +57,16 @@ char send_string[800] = "Degrees\t\tIR Distance (cm)\tSonar Distance (cm)\r\n";
 char rec_string[10];
 
 int main(void){
-	int i = 0;
-	botdata_t bdata;
 
+	botdata_t bdata;
 	botdata_init(&bdata);
+
+	botpos_t bpos;
+	botpos_init(&bpos);
+
+	oi_t *openi = oi_alloc();
+	oi_init(openi);
+
 	lcd_init();
 	button_init();
 	sonar_init();
@@ -68,30 +74,21 @@ int main(void){
 	servo_init();
 	uart_init();
 
+
 //	GPIO_init();\
 //	ir_sensor_init();
 //	WiFi_stop();
 //	WiFi_start("PplmcWtft!");
 
-	interpret_buttons(7);	//so we can move the servo to 90 degrees
-	i = 0;
+	//interpret_buttons(7);	//so we can move the servo to 90 degrees
 
 //	rec_string[i] = uart_receive();		//when using putty
-	while(1)
-	{
-		rec_string[i] = (char)uart_receive();
-		if(rec_string[i] == '\0' ||rec_string[i] =='\r' ||rec_string[i] == '\n')
-		{
-			if(strcmp(rec_string, "start") == 0)
-			{
-				break;
-			}
-		}
 
-		i++;
-	}
-	move_servo(0);
-	timer_waitMillis(1000);
+	move_servo(90);
+
+	interpret_movement( &bpos, &bdata, 1, 1);
+	//timer_waitMillis(5000);
+
 	state = LOW;
 
 //	uart_flush();
@@ -100,6 +97,8 @@ int main(void){
 
 	initial = 0;
 	object_send(&bdata);
+
+	oi_close();
 
 	return 0;
 }
@@ -110,9 +109,9 @@ void object_send(botdata_t *bdata){ // analizes sweep data and sends json object
 
 	do_sweep(bdata);
 	analyze(bdata);
+	find_width(bdata, &state, &initial_value, &second_value);
 	sendscandata(bdata);
 	//set state to LOW in find width WHY?
-	find_width(bdata, &state, &initial_value, &second_value);
 
 
 //print smallest object

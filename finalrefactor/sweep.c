@@ -55,14 +55,12 @@ void analyze(botdata_t *bdata) // checks for objects
 	int i = 0;
 	for(i = 1; i < 179; i++)
 	{
-		if((bdata->ir_measure[i-1] == -1 && bdata->ir_measure[i+1] == -1) &&
-					bdata->ir_measure[i] >=0)
+		if((bdata->ir_measure[i-1] == -1 && bdata->ir_measure[i+1] == -1) && bdata->ir_measure[i] >=0)
 		{
 			bdata->ir_measure[i] = -1;
 
 			//obj_count++;
-		} else if(bdata->ir_measure[i-1] >= 0 && bdata->ir_measure[i+1] >= 0 &&
-					bdata->ir_measure[i] == -1) {
+		} else if(bdata->ir_measure[i-1] >= 0 && bdata->ir_measure[i+1] >= 0 && bdata->ir_measure[i] == -1) {
 			bdata->ir_measure[i] = 1;
 
 		} else if((bdata->ir_measure[i-1] == -1 && bdata->ir_measure[i] >= 0)){
@@ -74,11 +72,16 @@ void analyze(botdata_t *bdata) // checks for objects
 			bdata->obj[bdata->obj_count].end_degree = (i-1);
 			//calculate width here
 			bdata->obj_count++;
-		} else if(i == 178 && bdata->obj[bdata->obj_count].start_degree >= 0 &&
-					bdata->obj[bdata->obj_count].end_degree == -1) {
+		} else if(i == 178 && bdata->obj[bdata->obj_count].start_degree >= 0 && bdata->obj[bdata->obj_count].end_degree == -1) {
 			bdata->obj[bdata->obj_count].end_degree = 180;
 			bdata->obj_count++;
 		}
+	}
+
+	if(bdata->obj[bdata->obj_count].start_degree >= 170 && bdata->obj[bdata->obj_count].end_degree == -1)
+	{
+		bdata->obj[bdata->obj_count].end_degree = 180;
+		bdata->obj_count++;
 	}
 
 	if(bdata->obj[bdata->obj_count].start_degree >= 170 &&
@@ -153,6 +156,8 @@ void find_width(botdata_t *bdata, state_t volatile *state,volatile unsigned int 
 {
 	int i = 0, j = 0, temp = 0;
 	char send_string[800];
+	char str[80];
+	sprintf(str, "lol %d",50);
 	//send object array in json form
 	sprintf(send_string, "{\"objects\": {");
 	j = 13;
@@ -169,7 +174,7 @@ void find_width(botdata_t *bdata, state_t volatile *state,volatile unsigned int 
 		while(*state != READY){}
 
 
-		bdata->obj[i].distance = time2distance(initial_value, second_value, state);
+		bdata->obj[i].distance = time2distance((unsigned int *)initial_value, (unsigned int *)second_value,(state_t *)state);
 		if(bdata->obj[i].distance < 80 && bdata->obj[i].distance > 10)
 		{
 //			obj[i].width = sqrt(((ir_measure[(obj[i].start_degree)])*(ir_measure[(obj[i].start_degree)]))+(ir_measure[(obj[i].end_degree)])*(ir_measure[(obj[i].end_degree)]) - 2*(ir_measure[(obj[i].start_degree)])*(ir_measure[(obj[i].end_degree)])*cos((degree)));

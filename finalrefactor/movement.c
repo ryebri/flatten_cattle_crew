@@ -8,45 +8,42 @@
 #include "movement.h"
 #include "lcd.h"
 #include "math.h"
+#include "floorsensor.h"
 
 void botpos_init(botpos_t *b){
-	int i;
 	b->angle = 0;
 	b->forward = 0;
 	b->right = 0;
-	for(i = 0; i < 4; i++){
-		b->edges[i] = 1;
-	}
 }
 
-void interpret_movement(botpos_t *b,int left, int right){
+void interpret_movement(botpos_t *b, botdata_t *bdata, int left, int right){
 	if(left < 0){
 		if(right < 0){
-			forward(b,1);
+			forward(b,bdata,1);
 		}
 		else{
-			turn(b,-1);
+			turn(b,1);
 		}
 	}
-	if(left > 0){
+	else if(left > 0){
 		if(right > 0){
-			forward(b,1);
+			forward(b,bdata,1);
 		}
 		else{
 			turn(b,-1);
 		}
 	}
 	// we know left must be 0
-	if(right < 0){
+	else if(right < 0){
 		turn(b,1);
 	}
-	if(right > 0){
+	else if(right > 0){
 		turn(b,-1);
 	}
 }
 
 
-rtvalue_t forward(botpos_t *b, int dir){// moves the bot forward to "distance" mm untill it reaches its destination or bumps into something
+rtvalue_t forward(botpos_t *b,botdata_t *bot, int dir){// moves the bot forward to "distance" mm untill it reaches its destination or bumps into something
 	if(dir < 0){
 		oi_setWheels(0,0);
 		oi_setWheels(-100,-100);
@@ -59,13 +56,22 @@ rtvalue_t forward(botpos_t *b, int dir){// moves the bot forward to "distance" m
     oi_update(b->sensor_data);
     //updateedge(b);
 	if(b->sensor_data->bumpLeft){
+		oi_setWheels(0,0);
 		if(b->sensor_data->bumpRight){
 			return bothBump;
 		}
 			return leftBump;
 	}
 	if(b->sensor_data->bumpRight){
+		oi_setWheels(0,0);
 		return rightBump;
+	}
+	if((cliffleftsurface(b) > 0       ||
+		 cliffleftfrontsurface(b) > 0  ||
+		 cliffrightfrontsurface(b) > 0 ||
+		 cliffrightsurface(b) > 0)){
+		//stop wheels!
+		oi_setWheels(0,0);
 	}
 	/*
 	if(b->edges[0] == 1){
@@ -110,7 +116,7 @@ int turn(botpos_t *b, int direction){ // direction determens the direction to tu
 		oi_update(b->sensor_data);
 		data +=  abs(b->sensor_data->angle);
 		b->angle += b->sensor_data->angle;
-		if(b->angle > 360 || b->angle < -360){
+		if(b->angle >= 360 || b->angle <= -360){
 			b->angle = 0;
 		}
 	}

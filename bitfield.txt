@@ -1,10 +1,10 @@
 0  |
 1  | - left speed
-2  |
+2  | - reverse
 
 3  | 
 4  | - right speed
-5  |
+5  | - reverse
 
 6  - start scan
 7  - free from collision alert (if needed/ wanted)
