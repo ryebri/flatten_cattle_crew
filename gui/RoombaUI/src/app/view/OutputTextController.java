@@ -411,10 +411,10 @@ public class OutputTextController {
 		return color;
 	}
 	
-	///
+	///Action event listener for the onEnter Command
 	/**
-	 * 
-	 * @param ae
+	 * Listens for the enter button to be pressed and calls the method to receive data from the robot
+	 * @param ae Action Event sent from JavaFX
 	 */
 	@FXML
 	public void onEnter(ActionEvent ae){
@@ -430,8 +430,10 @@ public class OutputTextController {
 	   receive_all();
 	}
 	
-	/*
-	 *used to receive data
+	///Method to receive data from the robot
+	/**
+	 * Method to receive ir, object, position, and bot sensor data.  Also includes some test
+	 * objects (when mainApp.test equals 0x01)
 	 */
 	public void receive_all(){
 		String received;
@@ -497,6 +499,11 @@ public class OutputTextController {
 		
 	}
 	
+	///Method to receive only the position
+	/**
+	 * This method receives the position, which includes a status bit used to determine which
+	 * receive method to call next.
+	 */
 	public void receive_position(){
 	   String received;
 	   received = mainApp.rc.get_response(mainApp.test);
@@ -508,12 +515,25 @@ public class OutputTextController {
 	   mainApp.rc.set_status(status);
 	}
 	
+	///Prints messages to the GUI
+	/**
+	 * This method prints string messages to the GUI and also adds indicators '<< ' or '>> ' to
+	 * show whether the program sent a message, or if it is receiving data.
+	 * @param s String to be displayed.
+	 * @param fromRoomba Boolean value to determine whether GUI is sending or receiving data
+	 */
 	public void print_string(String s, Boolean fromRoomba){
 		mainApp.getOutputData().add(new TextOutput((fromRoomba == true ? "<< " : ">> ") + s));
 	}
 	
 	//based upon other sensor data, inputs data to the obstruction array
 	// will have another argument eventually containing sensor data
+	///Interprets the obstructions array into indivual objects
+	/**
+	 * Receives an array of Obstruction objects from the ir_sensor.  Interprets those objects as
+	 * pipes, and then calls a method to interpret the other bot sensors information.
+	 * @param obstr Array of obstruction objects
+	 */
 	private void interpret_obstructions(Obstruction[] obstr){
 		int already_exists = 0;
 		
@@ -555,8 +575,12 @@ public class OutputTextController {
 		
 	}
 	
-	/*
-	 * Calculates the location for where an object should be drawn on the canvas
+	
+	///Calculates the location for where an object should be drawn on the canvas
+	/**
+	 * Takes in an Obstruction object and calculates the point where it should appear on the canvas
+	 * @param obstr An Obstruction object (Rock, Pipe, Line, or Hole)
+	 * @return
 	 */
 	private Point calculate_location(Obstruction obstr){
 		Point p = new Point();
@@ -618,6 +642,10 @@ public class OutputTextController {
 		return p;
 	}
 	
+	///Interprets the robot sensors underground ir sensors and bump sensors
+	/**
+	 * Interprets the data from the robot's sensors and changes them into the proper objects.
+	 */
 	private void interpret_bot_sensors(){
 		int sensors[] = data.getSensors();
 		int adj_angle = position.get_orientation();
