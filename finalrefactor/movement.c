@@ -11,12 +11,25 @@
 #include "floorsensor.h"
 #include "uart.h"
 
+///Initializes the angle, foward and right values of the roomba
+/**
+*sets the angle, foward and right to 0. This should probably only be called 1x at the beginning of the program. 
+*@param  b holds the andle, foward, and right values in a pointer to be used elsewhere. 
+*/
 void botpos_init(botpos_t *b){
 	b->angle = 0;
 	b->forward = 0;
 	b->right = 0;
 }
 
+///Tells the bot to move left or right
+/**
+*if left or right are 1, it will move foward based off of the value of left or right.
+*otherwise it turns the bot
+*will only allow reverse if the sensor is triggered
+*@param b holds the position of the bot to be used as a pointer
+*@param bdata holds the data of the robot
+*/
 rtvalue_t interpret_movement(botpos_t *b, botdata_t *bdata, int left, int right){
 	rtvalue_t rval;
 	rval = collision_detection(b);
@@ -48,8 +61,16 @@ rtvalue_t interpret_movement(botpos_t *b, botdata_t *bdata, int left, int right)
 	return finish;
 }
 
-
-rtvalue_t forward(botpos_t *b,botdata_t *bot, int dir){// moves the bot forward to "distance" mm untill it reaches its destination or bumps into something
+///Moves the bot forward to "distance" mm untill it reaches its destination or bumps into something
+/**
+*moves the robot fowards and updates the sensor data to see if it has hit anything on its bumpers
+*Then checks to see the ground ir sensors to see if there are cliffs or tape.
+*will help with turning using b->angle and the trig below
+*@param b keeps tabs on the position of the robot
+*@param bot stores the data of the bot, distance in this case
+*@param dir stores the direction, if less than 0 it will stop and reverse. 
+*/
+rtvalue_t forward(botpos_t *b,botdata_t *bot, int dir){
 
 	if(dir == 0){
 		return finish;
@@ -91,6 +112,13 @@ rtvalue_t forward(botpos_t *b,botdata_t *bot, int dir){// moves the bot forward 
 	return finish;
 }
 
+///If there is a collision it stops
+/**
+*checks if there is a left bump, right bump or both. Then stops.
+*If there are any cliffs it reurns it stops the roomba
+*Depending on the type of collision it will return a different value. 
+*@param b accesses sensor data on the roomba such as bump sensors or cliffs
+*/
 rtvalue_t collision_detection(botpos_t *b){
     oi_update(b->sensor_data);
 //    updateedge(b);
@@ -116,7 +144,13 @@ rtvalue_t collision_detection(botpos_t *b){
 	return finish;
 }
 
-int turn(botpos_t *b, int direction){ // direction determens the direction to turn (right is negitive, left is positive) the value is the number of degrees to turn
+///Direction determines the direction to turn (right is negitive, left is positive) the value is the number of degrees to turn
+/**
+*updates sensor data as turning the correct amount of degrees and updates the b->angle for future use
+*@param b used for updating sensor data and access the angle of the roomba
+*@param direction to turn the roomba, right is negative, left is positive
+*/
+int turn(botpos_t *b, int direction){
 	int data = 0;
 	if (direction == 0){
 		return 1;
@@ -139,7 +173,13 @@ int turn(botpos_t *b, int direction){ // direction determens the direction to tu
 	return 0;
 }
 
-
+///Recieves a command from GUI
+/**
+*Depending on the command within bdata->commands, it will either call the part of code to run the action or ignore the if statement.
+*the command is masked so as to see which bit field is registered as a 'high' from the GUI. This is what we do with the recieve code from the GUI
+*@param bdata holds the command. Easy to mask to see which bitfield is 'active'
+*@param bot will be used to help with knowing the position of the bot in the field
+*/
 void recieve_command(botdata_t *bdata, botpos_t *bot){
 int i = 0;
 char commands[2];
