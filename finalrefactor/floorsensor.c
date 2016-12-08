@@ -25,6 +25,11 @@
 //	b->edges[3] = b->sensor_data->cliffRight;
 //}
 
+///Returns flag of the ground IR sensors on the roomba
+/**
+*returns a value based on the value read by the bot of sensor_data of the cliffLeftSignal
+*@param b is used to update the sensors for the cliffLeftSignal
+*/
 int cliffleftsurface(botpos_t *b){
 	int data = b->sensor_data->cliffLeftSignal;
 	if(data > 2600){ //white floor (boundary)
@@ -42,6 +47,11 @@ int cliffleftsurface(botpos_t *b){
 	else {return 4;} //error flag
 }
 
+///Returns flag of the ground IR sensors on the roomba
+/**
+*returns a value based on the value read by the bot of sensor_data of the cliffFrontLeftSignal
+*@param b is used to update the sensors for the cliffFrontLeftSignal
+*/
 int cliffleftfrontsurface(botpos_t *b){
 	int data = b->sensor_data->cliffFrontLeftSignal;
 	if(data > 2600){ //white floor (boundary)
@@ -59,6 +69,11 @@ int cliffleftfrontsurface(botpos_t *b){
 	else {return 4;} //error flag
 }
 
+///Returns flag of the ground IR sensors on the roomba
+/**
+*returns a value based on the value read by the bot of sensor_data of the cliffRightSignal
+*@param b is used to update the sensors for the cliffRightSignal
+*/
 int cliffrightsurface(botpos_t *b){
 	int data = b->sensor_data->cliffRightSignal;
 	if(data > 2600){ //white floor (boundary)
@@ -76,7 +91,11 @@ int cliffrightsurface(botpos_t *b){
 	else {return 4;} //error flag
 }
 
-
+///Returns flag of the ground IR sensors on the roomba
+/**
+*returns a value based on the value read by the bot of sensor_data of the cliffFrontRightSignal
+*@param b is used to update the sensors for the cliffFrontRightSignal
+*/
 int cliffrightfrontsurface(botpos_t *b){
 	int data = b->sensor_data->cliffFrontRightSignal;
 	if(data > 2600){ //white floor (boundary)
