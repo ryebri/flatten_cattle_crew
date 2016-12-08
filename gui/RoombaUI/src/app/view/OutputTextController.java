@@ -12,6 +12,7 @@ import app.Pipe;
 import app.Position;
 import app.Rock;
 import app.SensorData;
+import app.xboxcontrollerinterface;
 import app.model.TextOutput;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -25,6 +26,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+///Class to interpret data
+/**
+ * This class listens to the textbox on the GUI to know when to send a signal to the roomba
+ * and when to receive information from the roomba.  When it receives data, it is in charge of
+ * telling the proper classes to call the proper methods for parsing and interpretation
+ * @author ryebri
+ *
+ */
 public class OutputTextController {
 	@FXML
 	private TableView<TextOutput> outputList;
@@ -44,7 +53,8 @@ public class OutputTextController {
 	private SensorData data;						//parses and reads in all data from bot
 	private Position position;						//stores position data 
 	private ArrayList<Obstruction> obstructions;	//array list containing all known obstructions
-	
+	private volatile int status;					//status bit of what to receive next
+	private xboxcontrollerinterface xbox;			//xbox controller
 	
 	private MainApp mainApp;
 	//light red		Color.rgb(255,94,94)
@@ -76,7 +86,11 @@ public class OutputTextController {
 			Color.rgb(160,255,255), Color.rgb(0,255,255), Color.rgb(0,170,170), 
 			Color.rgb(90,90,255), Color.rgb(0,0,255), Color.rgb(0,25,140), 
 			Color.rgb(255,107,255), Color.rgb(255,0,255),Color.rgb(140,0,140)}; 
-	
+	/**
+	 * Colors for use in the heatmap from the ir sensor
+	 * @author ryebri
+	 *
+	 */
 	public enum Colors {DARK_RED (0), RED (1), LIGHT_RED (2), DARK_ORANGE (3), ORANGE (4), LIGHT_ORANGE (5),
 						DARK_YELLOW (6), YELLOW (7), LIGHT_YELLOW (8), LIGHT_GREEN (9), GREEN (10), DARK_GREEN (11),
 						LIGHT_INDIGO (12), INDIGO (13), DARK_INDIGO (14), LIGHT_BLUE (15), BLUE (16), DARK_BLUE (17), 
@@ -89,11 +103,18 @@ public class OutputTextController {
 	}
 	int ir_reading[] = new int[180];
 	
+	//Constructor for the OutputTextController
+	/**
+	 * Constructor for the OutputTextController
+	 */
 	public OutputTextController() {
 		
 	}
 	
-	//change from a list to a table view?
+	///Initializes the Cell factory for the text output
+	/**
+	 * Initializes the Cell factory used in the GUI for displaying text output/controls sent
+	 */
 	@FXML
 	private void initialize(){
 		//Do the initialization, need internet for it
@@ -101,6 +122,14 @@ public class OutputTextController {
 		firstColumn.setCellValueFactory(cellData -> cellData.getValue().output());
 	}
 	
+	///Initialization Method called during program startup
+	/**
+	 * This method is used to instantiate the canvas that holds the GUI.  Also adds an event
+	 * handler for when the window is resized.  When resized, the canvas's redraw.  Unfortunately
+	 * the canvas objects do not enjoy changing size, so don't change the size of the window.
+	 * @param mainApp - Takes in a reference to the mainApp so that this class has access to all
+	 * of the GUI elements
+	 */
 	public void setMainApp(MainApp mainApp){
 		this.mainApp = mainApp;
 		outputList.setItems(mainApp.getOutputData());
@@ -113,6 +142,9 @@ public class OutputTextController {
                 System.out.println("Canvas Width: " + sensor_map.getWidth());
                 sensor_map.getGraphicsContext2D().clearRect(0, 0, sensor_map.getWidth(), sensor_map.getHeight());
                 drawShapes(sensor_map.getGraphicsContext2D());
+                draw_object_width(sensor_map.getGraphicsContext2D());
+                draw_map(area_map.getGraphicsContext2D());
+                draw_obstructions(area_map.getGraphicsContext2D());
                 
                 mainApp.getPrimaryStage().show();
                 
@@ -130,11 +162,18 @@ public class OutputTextController {
 		//drawShapes(gc);
 		obstructions = new ArrayList<Obstruction>();
 		position = new Position();
+		status = 0;
 		this.mainApp.getPrimaryStage().show();
+		xbox = new xboxcontrollerinterface(this.mainApp.rc);
 	}
 	
 	//between 35 and 80 (distance) / use all of it 0 - 147 roygbiv
 	//draw the ir sensor, then draw a box around the object based upon later data provided by robot
+	///Draw the ir sensor heatmap
+	/**
+	 * Method to draw the heatmap using the data provided from the ir sensor.
+	 * @param gc The ir canvas context, this is how we draw on the canvas.
+	 */
 	private void drawShapes(GraphicsContext gc){
 //		gc.setStroke(Color.BLUE);
 //		gc.setLineWidth(1);
@@ -149,6 +188,11 @@ public class OutputTextController {
 	}
 	
 	//sets the sensor info and then draws it. eventually will interpret distances as well
+	///Interpret the range of ir values
+	/**
+	 * Takes in the ir values from the robot and assigns "heat" color values based on how close the object is.
+	 * @param ir_sensor Values from the robot to be interpreted
+	 */
 	public void set_sensor(int[] ir_sensor)
 	{
 		ir_reading = ir_sensor;
@@ -163,6 +207,12 @@ public class OutputTextController {
 	}
 	
 	//draw boxes and input the distance/width associated with the object
+	///Draws distance and width information on heatmap for detected objects
+	/**
+	 * For objects detected by ir and validated by sonar, a box is drawn on the heatmap containing
+	 * the width and distance for each object.
+	 * @param gc The ir canvas context, this is how we draw on the canvas.
+	 */
 	private void draw_object_width(GraphicsContext gc){
 		int y_value = (int)sensor_map.getHeight() - 30;	//spacing on the y axis
 		
@@ -191,6 +241,11 @@ public class OutputTextController {
 	}
 	
 	// For the birds eye view map
+	///Creating the map
+	/**
+	 * Creates the map for GUI. Outlines the map boundaries and draws location of the robot.
+	 * @param gc The area map canvas context, this is how we draw on the canvas.
+	 */
 	private void draw_map(GraphicsContext gc){
 		gc.clearRect(0, 0, area_map.getWidth(), area_map.getHeight());
 		//draw the border
@@ -215,13 +270,19 @@ public class OutputTextController {
 		gc.strokeLine(position.get_start_x() + 50, position.get_start_y(), position.get_start_x() - 50, position.get_start_y());
 
 		
-		//call method to draw obstructions
+		//call method to draw obstructions - do that elsewhere
 		
 //		gc.setStroke(Color.RED);
 //		gc.setLineWidth(2.0);
 //		gc.strokeLine(0, 0, area_map.getWidth(), area_map.getHeight());
 	}
 	
+	///Draws the obstructions on the map
+	/**
+	 * Called after the draw map function.  This method draws the obstructions on the map along
+	 * with the orientation of the robot.
+	 * @param gc The area map canvas context, this is how we draw on the canvas.
+	 */
 	private void draw_obstructions(GraphicsContext gc){
 		//depending upon what type of object it is, it creates a different object
 		//pipes are both the same, red circle 
@@ -292,7 +353,12 @@ public class OutputTextController {
 		gc.strokeRect(697, 472, 5, 5);
 		gc.fillRect(698, 473, 3, 3);
 	}
-	
+	///Interpret an ir value into an index value for the Colors array
+	/**
+	 * Looks at the ir value, and returns the proper Colors array index value
+	 * @param ir value from the ir sensor.
+	 * @return Colors array index value (int)
+	 */
 	private int get_color(int ir)
 	{
 		int color = -1;
@@ -345,24 +411,29 @@ public class OutputTextController {
 		return color;
 	}
 	
+	///
+	/**
+	 * 
+	 * @param ae
+	 */
 	@FXML
 	public void onEnter(ActionEvent ae){
-		String received;
+
 //	   System.out.println("test") ;
-	   mainApp.getOutputData().add(new TextOutput(">> " + cmdLineBox.getText()));
+	   print_string((cmdLineBox.getText()), false);
 	   mainApp.rc.send_string(cmdLineBox.getText() + "\0", mainApp.test);
 //	   mainApp.rc.test();
 //	   sensor_map.getGraphicsContext2D().clearRect(0, 0, sensor_map.getWidth(), sensor_map.getHeight());
 //	   drawShapes(sensor_map.getGraphicsContext2D());
 	   this.mainApp.getPrimaryStage().show();
 	   cmdLineBox.clear();
-	   receive();
+	   receive_all();
 	}
 	
 	/*
 	 *used to receive data
 	 */
-	public void receive(){
+	public void receive_all(){
 		String received;
 	   this.mainApp.getPrimaryStage().show();
 	   cmdLineBox.clear();
@@ -374,7 +445,7 @@ public class OutputTextController {
 	    */
 	   //receive ir
 	   received = mainApp.rc.get_response(mainApp.test);
-	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: ir info"));
+	   print_string(("Received: ir info"), true);
 	   data = new SensorData(received);
 	   set_sensor(data.getData());
 	   
@@ -382,23 +453,23 @@ public class OutputTextController {
 	   received = mainApp.rc.get_response(mainApp.test);
 	   data.add_data(received);
 	   Obstruction[] temp = data.getObstruction();
-	   mainApp.getOutputData().add(new TextOutput("<< " + received));
-	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: object info"));
+	   print_string((received), true);
+	   print_string(("Received: object info"), true);
 	   
 	   /* 	receive position and direction 
 	    *  	use this method to update the positions
 	    */
-	   //position.update_positions(north, south, east, west, orientation);
-	   received = mainApp.rc.get_response(mainApp.test);
-	   data.add_data(received);
-	   position.update_positions(data.get_position());
-	   mainApp.getOutputData().add(new TextOutput("<< " + received));
-	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: position info"));
+	   receive_position();
+//	   received = mainApp.rc.get_response(mainApp.test);
+//	   data.add_data(received);
+//	   position.update_positions(data.get_position());
+//	   mainApp.getOutputData().add(new TextOutput("<< " + received));
+//	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: position info"));
 	   
 	   //receive other sensor data
 	   received = mainApp.rc.get_response(mainApp.test);
 	   data.add_data(received);
-	   mainApp.getOutputData().add(new TextOutput("<< " + "Received: bot sensors"));
+	   print_string(("Received: bot sensors"), true);
 
 	   //testing
 	   if(mainApp.test == 0x01){
@@ -406,7 +477,7 @@ public class OutputTextController {
 		   data.add_data(s);
 		   temp = data.getObstruction();
 		   
-		   position.set_orientation(270);
+		   position.set_orientation(180);
 		   Pipe ob1 = new Pipe(40, 65, 6);
 		   ob1.set_point(calculate_location(ob1));
 //		   obstructions.add(ob1);
@@ -424,6 +495,21 @@ public class OutputTextController {
 	   draw_map(area_map.getGraphicsContext2D());
 	   draw_obstructions(area_map.getGraphicsContext2D());
 		
+	}
+	
+	public void receive_position(){
+	   String received;
+	   received = mainApp.rc.get_response(mainApp.test);
+	   data.add_data(received);
+	   position.update_positions(data.get_position());
+	   print_string(received, true);
+	   print_string("Received: position info", true);
+	   status = position.get_status();
+	   mainApp.rc.set_status(status);
+	}
+	
+	public void print_string(String s, Boolean fromRoomba){
+		mainApp.getOutputData().add(new TextOutput((fromRoomba == true ? "<< " : ">> ") + s));
 	}
 	
 	//based upon other sensor data, inputs data to the obstruction array
@@ -462,7 +548,7 @@ public class OutputTextController {
 		if(mainApp.test == 0x01){
 			String sensor_s = "{\"sensors\": [000,001,001,001,003]}\n\0";
 			data.add_data(sensor_s);
-			mainApp.getOutputData().add(new TextOutput("<< " + sensor_s));
+			print_string((sensor_s), true);
 		}
 		
 		interpret_bot_sensors();
@@ -729,7 +815,7 @@ public class OutputTextController {
 			
 			break;
 		case 3:
-			mainApp.getOutputData().add(new TextOutput("<< " + "EXTRACTION POINT"));
+			print_string(("EXTRACTION POINT"), true);
 			break;
 		case 2:
 			Hole h = new Hole();
@@ -750,7 +836,7 @@ public class OutputTextController {
 			obstructions.add(h);
 			break;
 		case 4:
-			mainApp.getOutputData().add(new TextOutput("<< " + "FloorSensor: Error"));
+			print_string(("FloorSensor: Error"), true);
 			break;
 		default:
 			break;

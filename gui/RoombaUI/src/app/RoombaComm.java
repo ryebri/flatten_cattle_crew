@@ -19,16 +19,19 @@ public class RoombaComm {
 	private PrintWriter out;
 	private OutputTextController outputTxtCntr;
 	private int bitfield;
+	private int status;
 	
 	private Random rand = new Random(3);
 	public RoombaComm()
 	{
 		outputTxtCntr = null;
+		status = 0;
 	}
 	
 	public RoombaComm(OutputTextController outputTextController)
 	{
 		outputTxtCntr = outputTextController;
+		status = 0;
 	}
 	//connect
 	public void connect(String server_addr, int port) throws IOException
@@ -60,30 +63,31 @@ public class RoombaComm {
 	}
 	//Rex Borseth
 	//send
-	public void send_bitfield(int id, boolean pressed)
+	public void send_bitfield()
 	{
-		switch(id){
-		case 0:
-			// make function for sending specific bit
-			break;
-		case 3:
-			break;
-		case 6:
-			break;
-		case 7:
-			break;
-		case 9:
-			break;
-		case 10:
-			break;
-		case 11:
-		}
 		out.print(bitfield);
 		out.flush();
+		
+		//call receive, then check to see if the status bit has been set.  if it has, run receive_all.
+		if(bitfield == 64|| status == 1){
+			//print message to screen
+			outputTxtCntr.print_string("Waiting to receive scan", false);
+			outputTxtCntr.receive_all();
+			
+		} else {
+			outputTxtCntr.print_string("Waiting to receive position", false);
+			outputTxtCntr.receive_position();
+		}
+		
+		if(status == 1){
+			//print message to screen
+			outputTxtCntr.print_string("Waiting to receive scan", false);
+			outputTxtCntr.receive_all();
+		}
 	}
 	
 	
-	private void set_button_bit(int bit, boolean pressed){// adds the button bit to the bitfield
+	public void set_button_bit(int bit, boolean pressed){// adds the button bit to the bitfield
 		if(pressed){
 			bitfield +=bit^2;
 		}
@@ -91,7 +95,7 @@ public class RoombaComm {
 			bitfield -= bit^2;
 		}
 	}
-	private void send_trigger_bit(int speed, boolean isright,boolean pressed){	// adds bits for the trigger to the bitfield
+	public void set_trigger_bit(int speed, boolean isright, boolean pressed){	// adds bits for the trigger to the bitfield
 		if(isright){
 			if(pressed){
 				bitfield += speed * 8;
@@ -139,6 +143,11 @@ public class RoombaComm {
 	public void set_controller(OutputTextController output)
 	{
 		outputTxtCntr = output;
+	}
+	
+	public void set_status(int status)
+	{
+		this.status = status;
 	}
 	
 	public void test()

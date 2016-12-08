@@ -2,8 +2,8 @@
 {"ir": [044,045,047,045,045,045,039,043,041,043,045,044,041,035,038,037,037,034,035,035,040,045,039,038,039,041,042,037,043,039,041,041,042,036,045,041,047,045,046,046,037,034,118,063,046,053,074,049,059,050,062,103,291,287,366,366,369,296,369,366,366,293,316,366,369,311,295,350,363,363,369,293,366,310,292,363,366,366,366,289,366,369,291,366,357,366,298,363,369,297,325,366,366,321,293,366,363,347,366,292,310,363,300,369,293,366,304,369,290,366,291,366,291,270,090,055,073,292,304,363,363,369,295,366,317,363,330,363,301,366,366,294,293,369,292,369,369,290,342,328,366,366,369,366,366,273,366,293,366,366,303,363,292,340,296,291,366,358,363,363,366,293,366,369,304,325,369,369,366,366,319,293,366,292,287,366,294,369,369,369]}
 ^^ test values
 
-position json array -> {"position": [x_value_uint, x_negative_bool, y_value_uint, y_negative_bool, orientation]}
-			{"position": [000,000,000,000,000,000]}
+position json array -> {"position": [x_value_uint, x_negative_bool, y_value_uint, y_negative_bool, orientation, status]}
+			{"position": [000,000,000,000,000,000,0001]}
 
 bot sensors -> {"sensors": [cliff_left, cliff_leftfront, cliff_rightfront, cliff_right, bumpers]}
 		{"sensors": [000,000,000,000,000]}
@@ -13,3 +13,10 @@ objects -> {"objects": [distance, angle, width], [distance, angle, width], ...]}
 
 ir -> {"ir": [ir_data, ir_data, ...]}
 	{"ir": [000,000,...]}
+
+//change position data to accept a status bit and sensor data to parse it ---DONE 
+//need to create xbox controller in outputtextcontroller
+//look for status bit to change -- make volatile status bit in OutputTextController ---DONE
+//make method to print to screen
+
+**MUST SEND COMMAND TO SCAN AT BEGINNING**

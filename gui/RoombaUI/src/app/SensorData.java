@@ -36,7 +36,7 @@ public class SensorData {
 	public SensorData(String json){
 		flag_data_done = 0;
 		obstr_size = 0;
-		position = new int[5];
+		position = new int[6];
 		sensors = new int[5];
 		str_to_obj(json);
 	}
@@ -140,12 +140,12 @@ public class SensorData {
 		} else if(name.compareTo("position") == 0){
 			//{"position": {[NORTH,SOUTH,EAST,WEST,orientation]}
 			//new version {"position": [x,y,orientation]}
-			position = new int[5];
+			position = new int[6];
 			while(json.charAt(i)!= '['){
 				i++;
 			}
 			i++;
-			for(int j = 0; j < 5; j++){
+			for(int j = 0; j < 6; j++){
 				if(json.charAt(i)==']' || json.charAt(i) == '}'){
 					break;
 				} else if(json.charAt(i) == ','){

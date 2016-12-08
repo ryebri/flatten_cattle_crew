@@ -16,17 +16,19 @@ public class Position {
 	private int[] total_traveled;	//in each direction
 	private Point prev_position;	// xy position
 	private Point curr_position;	// xy position
-	private int orientation;
+	private int orientation;		// orientation of the robot
+	private int status;				//status bit used to say whether it hit something or not
 	
 	public Position(){
 		total_traveled = new int[]{0,0,0,0};
 		prev_position = new Point(x_start, y_start);	//middle of the canvas
 		curr_position = new Point(x_start, y_start);
 		orientation = 0;
+		status = 0;
 	}
 	
 	//orientation has north at 0
-	public void update_positions(int x, int x_negative, int y, int y_negative, int orientation){
+	public void update_positions(int x, int x_negative, int y, int y_negative, int orientation, int status){
 		//may need to have more logic here if the robot does not take care of things
 		int new_x, new_y;
 		if(x_negative == 0){
@@ -44,6 +46,7 @@ public class Position {
 		set_prev_position(curr_position.x, curr_position.y);
 		set_curr_position(new_x, new_y);
 		this.orientation = orientation;
+		this.status = status;
 	}
 	public void update_positions(int[] pos){
 		//may need to have more logic here if the robot does not take care of things
@@ -51,6 +54,7 @@ public class Position {
 		set_prev_position(curr_position.x, curr_position.y);
 		set_curr_position(pos);
 		this.orientation = pos[4];
+		status = pos[5];
 	}
 	
 	/*
@@ -78,6 +82,10 @@ public class Position {
 	
 	public int get_start_y(){
 		return y_start;
+	}
+	
+	public int get_status(){
+		return status;
 	}
 	
 	/*
@@ -124,5 +132,9 @@ public class Position {
 	
 	public void set_orientation(int orientation){
 		this.orientation = orientation;
+	}
+	
+	public void set_status(int status){
+		this.status = status;
 	}
 }
