@@ -20,6 +20,11 @@ void botpos_init(botpos_t *b){
 rtvalue_t interpret_movement(botpos_t *b, botdata_t *bdata, int left, int right){
 	rtvalue_t rval;
 	rval = collision_detection(b);
+	if(rval != finish){
+		b->bump = 1;
+		oi_setWheels(-100,-100);
+		timer_waitMillis(500);
+	}
 	if(left < 0){
 		if(right < 0){
 			forward(b,bdata,1);
@@ -112,7 +117,7 @@ rtvalue_t collision_detection(botpos_t *b){
 		oi_setWheels(0,0);
 		return irfault;
 	}
-
+	b->bump = 0;
 	return finish;
 }
 
@@ -168,7 +173,8 @@ char commands[2];
 	}
 
 	if(bdata->commands & 0x40){ 		//start scan
-		//call function/s
+
+	}
 	}
 	else{
 		// other functions

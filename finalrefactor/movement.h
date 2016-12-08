@@ -15,6 +15,7 @@ typedef enum rtvalue {leftBump,rightBump,bothBump,irfault,finish} rtvalue_t;
 
 
 typedef struct botpos{
+	int bump;
 	int angle; 		// the angle that the bot is currently faceing (0 -360) with 0 = forward 90 = right 180 = backwards 270 = left
 	int forward;	// forward is the distance forward (negitive for backwards)
 	int right;  	// right is the distance right traveled (negitive for left)

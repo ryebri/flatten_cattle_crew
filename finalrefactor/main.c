@@ -96,7 +96,6 @@ int main(void){
 	}*/
 	while(1){
 		recieve_command(&bdata,&bpos);
-
 	}
 
 
@@ -174,7 +173,7 @@ void send_position(botpos_t *bpos){
 	else banglefix = 0;
 
 
-	sprintf(send_string, "{\"position\": [%03d, %03d, %03d, %03d, %03d,%03d]}\n\0",bpos->right * rneg, rnegbool,bpos->forward * fneg, lnegbool, bpos->angle + banglefix, 2);
+	sprintf(send_string, "{\"position\": [%03d, %03d, %03d, %03d, %03d,%03d]}\n\0",bpos->right * rneg, rnegbool,bpos->forward * fneg, lnegbool, bpos->angle + banglefix, bpos->bump);
 
 }
 
