@@ -15,8 +15,10 @@ ir -> {"ir": [ir_data, ir_data, ...]}
 	{"ir": [000,000,...]}
 
 //change position data to accept a status bit and sensor data to parse it ---DONE 
-//need to create xbox controller in outputtextcontroller
+//need to create xbox controller in outputtextcontroller ---DONE
 //look for status bit to change -- make volatile status bit in OutputTextController ---DONE
-//make method to print to screen
+//make method to print to screen ---DONE
+//allow for command to be made to shift the screen/shift the start point
+//make a serial connection/thread for the toaster
 
 **MUST SEND COMMAND TO SCAN AT BEGINNING**

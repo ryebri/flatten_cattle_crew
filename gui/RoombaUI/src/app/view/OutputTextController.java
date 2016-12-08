@@ -479,7 +479,7 @@ public class OutputTextController {
 		   data.add_data(s);
 		   temp = data.getObstruction();
 		   
-		   position.set_orientation(180);
+		   position.set_orientation(0);
 		   Pipe ob1 = new Pipe(40, 65, 6);
 		   ob1.set_point(calculate_location(ob1));
 //		   obstructions.add(ob1);
@@ -566,7 +566,7 @@ public class OutputTextController {
 		
 		//add way to interpret rocks/lines/holes
 		if(mainApp.test == 0x01){
-			String sensor_s = "{\"sensors\": [000,001,001,001,003]}\n\0";
+			String sensor_s = "{\"sensors\": [001,002,001,001,003]}\n\0";
 			data.add_data(sensor_s);
 			print_string((sensor_s), true);
 		}

@@ -16,8 +16,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+///Main Class which starts everything
 /**
- * Beginning of the JavaFX GUI
+ * Beginning of the JavaFX GUI.  Contains a variable called test which when assigned 0x00 creates
+ * the roomba communication object, otherwise it enables various test methods throughout the code.
  * @author ryebri
  *
  */
@@ -29,8 +31,12 @@ public class MainApp extends Application {
     public RoombaComm rc;
     private OutputTextController controller;
 //    public ResizableCanvas sensor_map;
-	public final char test = (char)0x00;	//change to 0x00 when in actual use, 0x01 for testing
+	public final char test = (char)0x01;	//change to 0x00 when in actual use, 0x01 for testing
     
+	///Constructor for the MainApp
+	/**
+	 * Constructor for the MainApp Object
+	 */
     public MainApp(){
     	/*
     	Used for testing purposes
@@ -38,6 +44,12 @@ public class MainApp extends Application {
 //    	outputData.add(new TextOutput("Testing"));
 //    	outputData.add(new TextOutput("Test 2"));
     }
+    
+    ///Starts the program
+    /**
+     * Overriden method to start the JavaFX GUI
+     * @param primaryStage A Stage object is required to start the application
+     */
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
@@ -48,17 +60,19 @@ public class MainApp extends Application {
 		showMainPage();
 	}
 	
+	///Returns the Displayed Text responses
 	/**
-	 * Returns the data as an observable list of output data
-	 * @return
+	 * Returns the data as an observable list of output data so more messages can be added
+	 * @return ObservableList<TextOutput> List of the messages in the GUI
 	 */
 	public ObservableList<TextOutput> getOutputData() {
 		return outputData;
 	}
 	
+	///Main Function
 	/**
-	 * Launches the physical gui
-	 * @param args
+	 * Launches the physical gui.
+	 * @param args String array of arguments for the program
 	 */
 	public static void main(String[] args) {
 		
@@ -66,9 +80,10 @@ public class MainApp extends Application {
 		
 	}
 	
-
+	///Initializes the root layout
     /**
-     * Initializes the root layout.
+     * Initializes the root layout by setting all of the GUI objects.  Initializes the object
+     * for communication between the GUI and roomba.
      */
     public void initRootLayout() {
         try {
@@ -116,7 +131,7 @@ public class MainApp extends Application {
         }
     }
     
-
+    ///Loads the main page into the program
     /**
      * Shows the main overview inside the root layout.
      */
@@ -141,9 +156,10 @@ public class MainApp extends Application {
         }
     }
     
+    ///Returns the main stage.
     /**
-     * Returns the main stage.
-     * @return
+     * Returns the main stage. This is used to alter what is viewed on the screen.
+     * @return Stage Object
      */
     public Stage getPrimaryStage() {
         return primaryStage;

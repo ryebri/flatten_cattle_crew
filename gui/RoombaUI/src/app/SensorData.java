@@ -1,22 +1,21 @@
 package app;
 
+///Class to interpret json data
+/**
+ * Interprets the json data sent from the roomba and creates proper objects based upon which object
+ * type is contained within the json data.
+ * @author ryebri
+ *
+ */
 public class SensorData {
 	
-	public enum Direction {
-	    NORTH(0), SOUTH(1), EAST(2), WEST(3);
-
-	    private final int id;
-	    Direction(int id) { this.id = id; }
-	    public int getValue() { return id; }
-	}
-	
-	public enum Sensor {
-		BUMP_LEFT(0), BUMP_RIGHT(1), CLIFF_SENSOR(2);
-		
-		private final int index;
-		Sensor(int index) {this.index = index;}
-		public int getValue() { return index; }
-	}
+//	public enum Sensor {
+//		BUMP_LEFT(0), BUMP_RIGHT(1), CLIFF_SENSOR(2);
+//		
+//		private final int index;
+//		Sensor(int index) {this.index = index;}
+//		public int getValue() { return index; }
+//	}
 	
 	
 	private String name;
