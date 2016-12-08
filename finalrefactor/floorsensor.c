@@ -18,8 +18,8 @@
 
 #include "movement.h"
 
-//void updateedge(botpos_t *b){
-//	b->edges[0] = b->sensor_data->cliffLeft;
+//void updatebump(botpos_t *b){
+//	b->bump[0] = b->sensor_data->;
 //	b->edges[1] = b->sensor_data->cliffFrontLeft;
 //	b->edges[2] = b->sensor_data->cliffFrontRight;
 //	b->edges[3] = b->sensor_data->cliffRight;
@@ -30,13 +30,13 @@ int cliffleftsurface(botpos_t *b){
 	if(data > 2600){ //white floor (boundary)
 		return 1;
 	}
-	else if((data <= 2600 && data > 2100) || (data <=1600 && data > 50)){ //under normal floor
+	else if((data <= 2600 && data > 2000) || (data <=1600 && data > 50)){ //under normal floor
 		return 0;
 	}
 	else if(data <=50){ //open floor/hole
 		return 2;
 	}
-	else if(data <= 2100 && data > 1600){ //Under Extraction Point (BLACK)
+	else if(data <= 2000 && data > 1600){ //Under Extraction Point (BLACK)
 		return 3;
 	}
 	else {return 4;} //error flag
@@ -47,13 +47,13 @@ int cliffleftfrontsurface(botpos_t *b){
 	if(data > 2600){ //white floor (boundary)
 		return 1;
 	}
-	else if((data <= 2600 && data > 2100) || (data <=1600 && data > 50)){ //under normal floor
+	else if((data <= 2600 && data > 2000) || (data <=1600 && data > 50)){ //under normal floor
 		return 0;
 	}
 	else if(data <=50){ //open floor/hole
 		return 2;
 	}
-	else if(data <= 2100 && data > 1600){ //Under Extraction Point (BLACK)
+	else if(data <= 2000 && data > 1600){ //Under Extraction Point (BLACK)
 		return 3;
 	}
 	else {return 4;} //error flag
@@ -64,13 +64,13 @@ int cliffrightsurface(botpos_t *b){
 	if(data > 2600){ //white floor (boundary)
 		return 1;
 	}
-	else if((data <= 2600 && data > 2100) || (data <=1600 && data > 50)){ //under normal floor
+	else if((data <= 2600 && data > 2000) || (data <=1600 && data > 50)){ //under normal floor
 		return 0;
 	}
 	else if(data <=50){ //open floor/hole
 		return 2;
 	}
-	else if(data <= 2100 && data > 1600){ //Under Extraction Point (BLACK)
+	else if(data <= 2000 && data > 1600){ //Under Extraction Point (BLACK)
 		return 3;
 	}
 	else {return 4;} //error flag
@@ -82,13 +82,13 @@ int cliffrightfrontsurface(botpos_t *b){
 	if(data > 2600){ //white floor (boundary)
 		return 1;
 	}
-	else if((data <= 2600 && data > 2100) || (data <=1600 && data > 50)){ //under normal floor
+	else if((data <= 2600 && data > 2000) || (data <=1600 && data > 50)){ //under normal floor
 		return 0;
 	}
 	else if(data <=50){ //open floor/hole
 		return 2;
 	}
-	else if(data <= 2100 && data > 1600){ //Under Extraction Point (BLACK)
+	else if(data <= 20100 && data > 1600){ //Under Extraction Point (BLACK)
 		return 3;
 	}
 	else {return 4;} //error flag

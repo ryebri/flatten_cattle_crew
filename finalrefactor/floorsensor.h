@@ -14,7 +14,7 @@ int cliffleftsurface(botpos_t *b);
 int cliffleftfrontsurface(botpos_t *b);
 int cliffrightsurface(botpos_t *b);
 int cliffrightfrontsurface(botpos_t *b);
-//void updateedge(botpos_t *b);
+//void updatebump(botpos_t *b);
 
 
 

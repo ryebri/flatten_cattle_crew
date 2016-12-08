@@ -11,6 +11,8 @@
 #include "lcd.h"
 #include "uart.h"
 #include "open_interface.h"
+#include <stdio.h>
+#include <string.h>
 
 void do_sweep(botdata_t *bdata){
 
@@ -43,7 +45,7 @@ void do_sweep(botdata_t *bdata){
 		}
 //		sprintf(send_string, "%d\t\t%d\r\n\0", (int)i, (int)ir_dist);
 //		uart_sendStr(send_string);
-		interpret_buttons(1);
+		move_servo(i);
 		timer_waitMillis(10);
 
 	}
@@ -146,6 +148,8 @@ void sendscandata(botdata_t *bdata){
 
 		uart_sendStr(send_string);
 
+
+
 }
 
 
@@ -155,9 +159,7 @@ void find_width(botdata_t *bdata, state_t volatile *state,volatile unsigned int 
 					//generates json object
 {
 	int i = 0, j = 0, temp = 0;
-	char send_string[800];
-	char str[80];
-	sprintf(str, "lol %d",50);
+	char send_string[800] = "Degrees\t\tIR Distance (cm)\tSonar Distance (cm)\r\n";
 	//send object array in json form
 	sprintf(send_string, "{\"objects\": {");
 	j = 13;
@@ -241,6 +243,8 @@ void find_width(botdata_t *bdata, state_t volatile *state,volatile unsigned int 
 	j++;
 	send_string[j] = '\0';
 
+	//uart_sendStr(send_string); Moved lines below here from object send
+	sprintf(send_string, "number of objects found %d", bdata->obj_count);
 	uart_sendStr(send_string);
 }
 

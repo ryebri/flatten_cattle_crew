@@ -3,6 +3,7 @@
  */
 #include <stdbool.h>
 #include "open_interface.h"
+#include "movement.h"
 #include "timer.h"
 #include "lcd.h"
 #include "button.h"
@@ -11,12 +12,11 @@
 #include <math.h>
 #include "driverlib/interrupt.h"
 #include <stdlib.h>
-
+#include "floorsensor.h"
 #include "botdata.h"
 #include "sweep.h"
-#include "movement.h"
-void object_send(botdata_t *bdata);
 
+void object_send(botdata_t *bdata, botpos_t *bpos);
 void sonar_init();
 void ir_sensor_init();
 void servo_init();
@@ -53,8 +53,7 @@ int obj_count = 0;
 Objects obj[10];
 */
 
-char send_string[800] = "Degrees\t\tIR Distance (cm)\tSonar Distance (cm)\r\n";
-char rec_string[10];
+//char rec_string[10]; // when using putty
 
 int main(void){
 
@@ -78,25 +77,35 @@ int main(void){
 //	GPIO_init();\
 //	ir_sensor_init();
 //	WiFi_stop();
-//	WiFi_start("PplmcWtft!");
-
+	WiFi_start("PplmcWtft!");
 	//interpret_buttons(7);	//so we can move the servo to 90 degrees
-
 //	rec_string[i] = uart_receive();		//when using putty
 
-	move_servo(90);
-
-	interpret_movement( &bpos, &bdata, 1, 1);
-	//timer_waitMillis(5000);
-
+	move_servo(0);
+	bpos.sensor_data = openi;
 	state = LOW;
+	/*
+	while(1){	//IR floor sensor testing
+		oi_update(openi);
+		sprintf(str,"L : %3d  FL: %3d  FR: %3d  R : %3d\n\r", openi->cliffLeftSignal,
+													 openi->cliffFrontLeftSignal,
+													 openi->cliffFrontRightSignal,
+													 openi->cliffRightSignal);
+		uart_sendStr(str);
+		timer_waitMillis(200);
+	}*/
+	while(1){
+		recieve_command(&bdata,&bpos);
+
+	}
+
 
 //	uart_flush();
 //	uart_sendStr(send_string);
 //	uart_flush();
 
 	initial = 0;
-	object_send(&bdata);
+	object_send(&bdata,&bpos);
 
 	oi_close();
 
@@ -104,15 +113,22 @@ int main(void){
 }
 
 
-void object_send(botdata_t *bdata){ // analizes sweep data and sends json object
-
+void object_send(botdata_t *bdata, botpos_t *bpos){ // analizes sweep data and sends json object
+	char send_string[45];
 
 	do_sweep(bdata);
 	analyze(bdata);
-	find_width(bdata, &state, &initial_value, &second_value);
 	sendscandata(bdata);
-	//set state to LOW in find width WHY?
+	find_width(bdata, &state, &initial_value, &second_value);\
 
+
+
+
+
+	sprintf(send_string, "{\"sensors\": [%03d, %03d, %03d, %03d, %03d]}\n\0",cliffleftsurface(bpos), cliffleftfrontsurface(bpos),
+		cliffrightfrontsurface(bpos), cliffrightsurface(bpos),3);
+
+	uart_sendStr(send_string);
 
 //print smallest object
 	/*
@@ -129,12 +145,38 @@ void object_send(botdata_t *bdata){ // analizes sweep data and sends json object
 	move_servo((bdata->obj[initial].end_degree - bdata->obj[initial].start_degree)/2 +
 					bdata->obj[initial].start_degree);
 */
-
-	sprintf(send_string, "number of objects found %d", bdata->obj_count);
-	uart_sendStr(send_string);
+	// moved to find_width
+	//sprintf(send_string, "number of objects found %d", bdata->obj_count);
+	//uart_sendStr(send_string);
 }
 
+void send_position(botpos_t *bpos){
+	char send_string[45];
+	int rneg,fneg,rnegbool,lnegbool,banglefix;
 
+	if(bpos->right < 0){
+		rneg = -1;
+		rnegbool = 1;
+	}
+	else{
+		rneg = 1;
+		rnegbool = 0;
+	}
+	if(bpos->forward < 0){
+		fneg = -1;
+		lnegbool = 1;
+	}
+	else{
+		fneg = 1;
+		rnegbool = 0;
+	}
+	if(bpos->angle < 0)	banglefix = 360;
+	else banglefix = 0;
+
+
+	sprintf(send_string, "{\"position\": [%03d, %03d, %03d, %03d, %03d,%03d]}\n\0",bpos->right * rneg, rnegbool,bpos->forward * fneg, lnegbool, bpos->angle + banglefix, 2);
+
+}
 
 void sonar_init(){
 	//initialize the timer

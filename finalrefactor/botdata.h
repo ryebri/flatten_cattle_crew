@@ -37,5 +37,4 @@ double get_distance();
 void send_pulse();
 unsigned time2distance();
 
-
 #endif /* BOTDATA_H_ */

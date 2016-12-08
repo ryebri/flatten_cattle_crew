@@ -9,6 +9,7 @@
 #include "botlogic.h"
 #include <stdint.h>
 #include "uart.h"
+#include "floorsensor.h"
 
 
 int getTo(int targetForward, int targetRight, oi_t *sensor){ // attempts to get to the specified forward and right position
@@ -64,8 +65,8 @@ int send_sensor(botdata_t bot, botpos_t *bpos){
 
 
 
-	sprintf(send_string, "{\"sensors\": [%03d, %03d, %03d, %03d]}\n\0",cliffleftsurface(&bot), cliffleftfrontsurface(&bot),
-		cliffrightfrontsurface(&bot), cliffrightsurface(&bot));
+	sprintf(send_string, "{\"sensors\": [%03d, %03d, %03d, %03d]}\n\0",cliffleftsurface(bpos), cliffleftfrontsurface(bpos),
+		cliffrightfrontsurface(bpos), cliffrightsurface(bpos));
 
 	uart_sendStr(send_string);
 	timer_waitMillis(50);
