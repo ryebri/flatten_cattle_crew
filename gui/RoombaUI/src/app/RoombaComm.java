@@ -113,6 +113,7 @@ public class RoombaComm {
 			outputTxtCntr.print_string("Waiting to receive scan", false);
 			outputTxtCntr.receive_all();
 			
+			
 		} else {
 			outputTxtCntr.print_string("Waiting to receive position", false);
 			outputTxtCntr.receive_position();
