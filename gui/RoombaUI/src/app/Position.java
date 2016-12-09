@@ -179,7 +179,7 @@ public class Position {
 	 * @param y Int value of the current y position on the canvas.
 	 */
 	public void set_curr_position(int x, int y){
-		curr_position.setLocation(x, y);
+		curr_position.setLocation(x/100, y/100);
 	}
 	///Set current position point
 	/**
@@ -188,16 +188,16 @@ public class Position {
 	 */
 	public void set_curr_position(int position[]){
 		int new_x, new_y;
-		if(position[1] == 0){
-			new_x = curr_position.x + position[0];
+		if(position[1] == 1){
+			new_x = curr_position.x + position[0]/100;
 		} else {
-			new_x = curr_position.x - position[0];
+			new_x = curr_position.x - position[0]/100;
 		}
 		
-		if(position[3] == 0){
-			new_y = curr_position.y + position[2];
+		if(position[3] == 1){
+			new_y = curr_position.y + position[2]/100;
 		} else {
-			new_y = curr_position.y - position[2];
+			new_y = curr_position.y - position[2]/100;
 		}
 		
 		curr_position.setLocation(new_x, new_y);
@@ -214,15 +214,15 @@ public class Position {
 	 */
 	public void set_total_traveled(int x, int x_neg, int y, int y_neg){
 		if(x_neg == 0){
-			total_traveled[CardinalDirection.NORTH.index] += x;
+			total_traveled[CardinalDirection.NORTH.index] += x/100;
 		} else {
-			total_traveled[CardinalDirection.SOUTH.index] += x;
+			total_traveled[CardinalDirection.SOUTH.index] += x/100;
 		}
 		
 		if(y_neg == 0){
-			total_traveled[CardinalDirection.EAST.index] += y;
+			total_traveled[CardinalDirection.EAST.index] += y/100;
 		} else {
-			total_traveled[CardinalDirection.WEST.index] += y;
+			total_traveled[CardinalDirection.WEST.index] += y/100;
 		}
 	}
 	

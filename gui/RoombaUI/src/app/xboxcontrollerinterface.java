@@ -8,29 +8,35 @@ import ch.aplu.xboxcontroller.XboxControllerAdapter;
 		
 		private class MyXboxControllerAdapter extends XboxControllerAdapter
 		  {
-			
+			private boolean forward = true;
 			public void buttonA(boolean pressed)//scan
 		    {
 				rc.set_button_bit(6, pressed);
-				rc.send_bitfield();
+				if(pressed == true){
+		    		rc.send_bitfield();
+		    	}
 			}
 
 			public void buttonB(boolean pressed)// free from collision alert 
 		    {
 				rc.set_button_bit(7, pressed);
-				rc.send_bitfield();
+				if(pressed == true){
+		    		rc.send_bitfield();
+		    	}
 		    }
 
 			public void buttonX(boolean pressed)//swap between forward and reverse
 		    {
-				rc.set_button_bit(9, pressed);
-				rc.send_bitfield();
+				if(forward)forward = false;
+				else forward = true;
 		    }
 
 		    public void buttonY(boolean pressed)
 		    {
 		    	rc.set_button_bit(11, pressed);
-				rc.send_bitfield();
+		    	if(pressed == true){
+		    		rc.send_bitfield();
+		    	}
 		    }
 
 		    public void back(boolean pressed)
@@ -44,13 +50,17 @@ import ch.aplu.xboxcontroller.XboxControllerAdapter;
 			public void leftShoulder(boolean pressed)// 90 degree left turn
 		    {
 				rc.set_button_bit(9, pressed);
-				rc.send_bitfield();
+				if(pressed == true){
+					rc.send_bitfield();
+				}
 		    }
 
 			public void rightShoulder(boolean pressed)// 90 degree right turn
 		    {
 				rc.set_button_bit(10, pressed);
-				rc.send_bitfield();
+				if(pressed == true){
+		    		rc.send_bitfield();
+		    	}
 		    }
 
 		    public void leftThumb(boolean pressed)
@@ -61,28 +71,32 @@ import ch.aplu.xboxcontroller.XboxControllerAdapter;
 		    {
 		    }
 
-		    public void dpad(int direction, boolean pressed)
+		    public void dpad(int direction, boolean pressed)//0 = up , 4 = down
 		    {
+		    	if(pressed){
+			    	if(direction == 0){
+						rc.set_button_bit(1, pressed);
+						rc.set_button_bit(4, pressed);
+			    	}
+			    	else if(direction == 4){
+						rc.set_button_bit(2, pressed);
+						rc.set_button_bit(5, pressed);
+			    	}
+		    		rc.send_bitfield();
+		    	}
+		    	else{
+					rc.set_button_bit(0, pressed);
+					}
 		    }
 
 			public void leftTrigger(double value)// left wheel speed
 		    {
-				if(value > .5){
-					rc.set_trigger_bit(2, false, true);
-				} else {
-					rc.set_trigger_bit(0, false, false);
-				}
-				rc.send_bitfield();
+				
 		    }
 
 			public void rightTrigger(double value)// right wheel speed
 		    {
-				if(value > .5){
-					rc.set_trigger_bit(3, true, true);
-				} else {
-					rc.set_trigger_bit(3, true, false);
-				}
-				rc.send_bitfield();
+
 		    }
 
 		    public void leftThumbMagnitude(double magnitude)

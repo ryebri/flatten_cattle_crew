@@ -1,6 +1,7 @@
 package app.view;
 
 import java.awt.Point;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import app.Hole;
@@ -55,6 +56,7 @@ public class OutputTextController {
 	private ArrayList<Obstruction> obstructions;	//array list containing all known obstructions
 	private volatile int status;					//status bit of what to receive next
 	private xboxcontrollerinterface xbox;			//xbox controller
+	private int shift_canvas;						//
 	
 	private MainApp mainApp;
 	//light red		Color.rgb(255,94,94)
@@ -418,16 +420,31 @@ public class OutputTextController {
 	 */
 	@FXML
 	public void onEnter(ActionEvent ae){
-
+		String send = cmdLineBox.getText();
 //	   System.out.println("test") ;
-	   print_string((cmdLineBox.getText()), false);
-	   mainApp.rc.send_string(cmdLineBox.getText() + "\0", mainApp.test);
+	   print_string((send), false);
+	   if(send.compareTo("ShiftCanvas") == 0){
+		   //prompt for x shift, th
+	   } else if(send.compareTo("override") == 0){
+		   try {
+			mainApp.rc.close();
+			Thread.sleep(5000);
+			mainApp.rc.connect("192.168.1.1", 42880);
+			xbox.set_roomba_control(mainApp.rc);
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	   } else {
+		   mainApp.rc.send_string(cmdLineBox.getText() + "\0", mainApp.test);
+	   }
 //	   mainApp.rc.test();
 //	   sensor_map.getGraphicsContext2D().clearRect(0, 0, sensor_map.getWidth(), sensor_map.getHeight());
 //	   drawShapes(sensor_map.getGraphicsContext2D());
 	   this.mainApp.getPrimaryStage().show();
+	   print_string("Reset Connection", false);
 	   cmdLineBox.clear();
-	   receive_all();
+//	   receive_all();
 	}
 	
 	///Method to receive data from the robot
@@ -437,7 +454,7 @@ public class OutputTextController {
 	 */
 	public void receive_all(){
 		String received;
-	   this.mainApp.getPrimaryStage().show();
+//	   this.mainApp.getPrimaryStage().show();
 	   cmdLineBox.clear();
 	   
 //		   draw_map(area_map.getGraphicsContext2D());
@@ -448,11 +465,17 @@ public class OutputTextController {
 	   //receive ir
 	   received = mainApp.rc.get_response(mainApp.test);
 	   print_string(("Received: ir info"), true);
+	   if(received.compareTo("") == 0){
+		   return;
+	   }
 	   data = new SensorData(received);
 	   set_sensor(data.getData());
 	   
 	   //receive objects
 	   received = mainApp.rc.get_response(mainApp.test);
+	   if(received.compareTo("") == 0){
+		   return;
+	   }
 	   data.add_data(received);
 	   Obstruction[] temp = data.getObstruction();
 	   print_string((received), true);
@@ -461,7 +484,7 @@ public class OutputTextController {
 	   /* 	receive position and direction 
 	    *  	use this method to update the positions
 	    */
-	   receive_position();
+	   receive_position(false);
 //	   received = mainApp.rc.get_response(mainApp.test);
 //	   data.add_data(received);
 //	   position.update_positions(data.get_position());
@@ -470,6 +493,9 @@ public class OutputTextController {
 	   
 	   //receive other sensor data
 	   received = mainApp.rc.get_response(mainApp.test);
+	   if(received.compareTo("") == 0){
+		   return;
+	   }
 	   data.add_data(received);
 	   print_string(("Received: bot sensors"), true);
 
@@ -503,16 +529,28 @@ public class OutputTextController {
 	/**
 	 * This method receives the position, which includes a status bit used to determine which
 	 * receive method to call next.
+	 * @param newSensorData Boolean value determines whether we need a new object or not
 	 */
-	public void receive_position(){
+	public void receive_position(boolean newSensorData){
+		//need logic to determine when to create new data objects and when not to.
 	   String received;
 	   received = mainApp.rc.get_response(mainApp.test);
+		if(newSensorData == true){
+			data = new SensorData(received);
+			//draw the map
+		}
 	   data.add_data(received);
 	   position.update_positions(data.get_position());
 	   print_string(received, true);
 	   print_string("Received: position info", true);
 	   status = position.get_status();
 	   mainApp.rc.set_status(status);
+	   
+	   if(newSensorData == true){
+		   draw_map(area_map.getGraphicsContext2D());
+		   draw_obstructions(area_map.getGraphicsContext2D());
+		   
+	   }
 	}
 	
 	///Prints messages to the GUI
@@ -707,11 +745,12 @@ public class OutputTextController {
 			radian = Math.toRadians(adj_angle);
 			
 			temp.set_point((int)(17*cos_coeff*Math.cos(radian) + position.get_curr_position().x), (int)(17*sin_coeff*Math.sin(radian) + position.get_curr_position().y));
-		}
-		
-		if(temp.get_point().x != 0 && temp.get_point().y != 0){
 			obstructions.add(temp);
 		}
+		
+//		if(temp.get_point().x != 0 && temp.get_point().y != 0){
+//			obstructions.add(temp);
+//		}
 		
 		//interpret line sensors
 		
@@ -721,7 +760,7 @@ public class OutputTextController {
 		 */
 		int flag = 1;
 		for(int i = 0; i < 4; i++){
-			if(sensors[i] != 1){
+			if(sensors[i] != 0){
 				flag = sensors[i];
 				break;
 			}
@@ -775,7 +814,7 @@ public class OutputTextController {
 		int delta_y = position.get_start_y() - position.get_curr_position().y;
 		adj_angle = position.get_orientation();
 		switch(flag){
-		case 0:
+		case 2:
 			Line l = new Line();
 			//West
 			if(sensors[0] == 0 && (adj_angle < 5 || adj_angle > 355)){
@@ -842,10 +881,10 @@ public class OutputTextController {
 			obstructions.add(l);
 			
 			break;
-		case 3:
+		case 1:
 			print_string(("EXTRACTION POINT"), true);
 			break;
-		case 2:
+		case 3:
 			Hole h = new Hole();
 			//calculate where to place the hole
 			if(adj_angle < 45 || adj_angle > 325){

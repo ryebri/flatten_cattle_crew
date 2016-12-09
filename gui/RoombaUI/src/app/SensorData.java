@@ -37,6 +37,12 @@ public class SensorData {
 		obstr_size = 0;
 		position = new int[6];
 		sensors = new int[5];
+		for(int i = 0; i < 6; i++){
+			if(i < 5){
+				sensors[i] = 0;
+			}
+			position[i] = 0;
+		}
 		str_to_obj(json);
 	}
 	
@@ -101,7 +107,7 @@ public class SensorData {
 		} else if(name.compareTo("objects") == 0){
 			int obstr_data_index = 0;
 			obstr = new Obstruction[15];
-			while(json.charAt(i)!= '['){
+			while(json.charAt(i)!= '[' && json.charAt(i) != '}'){
 				i++;
 			}
 
@@ -140,6 +146,9 @@ public class SensorData {
 			//{"position": {[NORTH,SOUTH,EAST,WEST,orientation]}
 			//new version {"position": [x,y,orientation]}
 			position = new int[6];
+			for(int j = 0; j < 6; j++){
+				position[j] = 0;
+			}
 			while(json.charAt(i)!= '['){
 				i++;
 			}
@@ -147,12 +156,17 @@ public class SensorData {
 			for(int j = 0; j < 6; j++){
 				if(json.charAt(i)==']' || json.charAt(i) == '}'){
 					break;
-				} else if(json.charAt(i) == ','){
+				} else if(json.charAt(i) == ',' || json.charAt(i) == ' '){
+					i++;
+				} 
+				
+				if(json.charAt(i) == ' '){
 					i++;
 				}
 				temp = Character.getNumericValue(json.charAt(i))*100 + Character.getNumericValue(json.charAt(i+1))*10 + Character.getNumericValue(json.charAt(i+2));
 				position[j] = temp;
 				i+=3;
+				
 			}
 
 			
@@ -160,6 +174,9 @@ public class SensorData {
 			//{"sensors": [cliff_left, cliff_leftfront, cliff_rightfront, cliff_right, bumper]}
 			
 			sensors = new int[5];
+			for(int j = 0; j < 5; j++){
+				sensors[j] = 0;
+			}
 			while(json.charAt(i)!= '['){
 				i++;
 			}
@@ -167,7 +184,11 @@ public class SensorData {
 			for(int j = 0; j < 5; j++){
 				if(json.charAt(i)==']' || json.charAt(i) == '}'){
 					break;
-				} else if(json.charAt(i) == ','){
+				} else if(json.charAt(i) == ',' || json.charAt(i) == ' '){
+					i++;
+				}
+				
+				if(json.charAt(i) == ' '){
 					i++;
 				}
 				temp = Character.getNumericValue(json.charAt(i))*100 + Character.getNumericValue(json.charAt(i+1))*10 + Character.getNumericValue(json.charAt(i+2));

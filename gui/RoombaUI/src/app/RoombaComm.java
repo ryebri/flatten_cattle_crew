@@ -104,11 +104,14 @@ public class RoombaComm {
 	 */
 	public void send_bitfield()
 	{
-		out.print(bitfield);
+		String field = String.format("%05d",bitfield);
+		
+		
+		out.print(field + "\0");
 		out.flush();
 		
 		//call receive, then check to see if the status bit has been set.  if it has, run receive_all.
-		if(bitfield == 64|| status == 1){
+		if(bitfield == 64){
 			//print message to screen
 			outputTxtCntr.print_string("Waiting to receive scan", false);
 			outputTxtCntr.receive_all();
@@ -116,7 +119,7 @@ public class RoombaComm {
 			
 		} else {
 			outputTxtCntr.print_string("Waiting to receive position", false);
-			outputTxtCntr.receive_position();
+			outputTxtCntr.receive_position(true);
 		}
 		
 		if(status == 1){
@@ -134,10 +137,10 @@ public class RoombaComm {
 	 */
 	public void set_button_bit(int bit, boolean pressed){// adds the button bit to the bitfield
 		if(pressed){
-			bitfield +=bit^2;
+			bitfield += Math.pow(2, bit);
 		}
 		else{
-			bitfield -= bit^2;
+			bitfield = 0;
 		}
 	}
 	
@@ -152,7 +155,7 @@ public class RoombaComm {
 	public void set_trigger_bit(int speed, boolean isright, boolean pressed){	// adds bits for the trigger to the bitfield
 		if(isright){
 			if(pressed){
-				bitfield += speed * 8;
+				bitfield += Math.pow(2, speed);
 			}
 			else{
 				bitfield &= 65479; // clears bits
@@ -160,7 +163,7 @@ public class RoombaComm {
 		}
 		else{
 			if(pressed){
-				bitfield += speed;
+				bitfield += Math.pow(2, speed);
 			}
 			else{
 				bitfield &= 65528;// clears bits
