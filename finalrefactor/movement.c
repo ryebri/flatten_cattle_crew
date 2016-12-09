@@ -6,43 +6,38 @@
  */
 #include <stdlib.h>
 #include "movement.h"
-#include "lcd.h"
 #include "math.h"
 #include "floorsensor.h"
 #include "uart.h"
+#include "main.h"
 
-///Initializes the angle, foward and right values of the roomba
-/**
-*sets the angle, foward and right to 0. This should probably only be called 1x at the beginning of the program. 
-*@param  b holds the andle, foward, and right values in a pointer to be used elsewhere. 
-*/
 void botpos_init(botpos_t *b){
 	b->angle = 0;
 	b->forward = 0;
 	b->right = 0;
 }
 
-///Tells the bot to move left or right
-/**
-*if left or right are 1, it will move foward based off of the value of left or right.
-*otherwise it turns the bot
-*will only allow reverse if the sensor is triggered
-*@param b holds the position of the bot to be used as a pointer
-*@param bdata holds the data of the robot
-*/
 rtvalue_t interpret_movement(botpos_t *b, botdata_t *bdata, int left, int right){
 	rtvalue_t rval;
 	rval = collision_detection(b);
+	/*
+	if(rval != finish){
+		b->bump = rval;
+		oi_setWheels(-100,-100);
+		timer_waitMillis(500);
+		oi_setWheels(0,0);
+	}
+	*/
 	if(left < 0){
 		if(right < 0){
-			forward(b,bdata,1);
+			forward(b,bdata,-1);
 		}
-		else if(rval != finish) return rval;// only allows reverse if sensors triggerd
+		else if(rval != finish && rval != extraction) return rval;// only allows reverse when sensors triggerd
 		else{
 			turn(b,1);
 		}
 	}
-	else if(rval != finish)return rval; //only allows reverse when sensors triggerd
+	else if(rval != finish && rval != extraction)return rval; //only allows reverse when sensors triggerd
 	else if(left > 0){
 		if(right > 0){
 			forward(b,bdata,1);
@@ -61,18 +56,11 @@ rtvalue_t interpret_movement(botpos_t *b, botdata_t *bdata, int left, int right)
 	return finish;
 }
 
-///Moves the bot forward to "distance" mm untill it reaches its destination or bumps into something
-/**
-*moves the robot fowards and updates the sensor data to see if it has hit anything on its bumpers
-*Then checks to see the ground ir sensors to see if there are cliffs or tape.
-*will help with turning using b->angle and the trig below
-*@param b keeps tabs on the position of the robot
-*@param bot stores the data of the bot, distance in this case
-*@param dir stores the direction, if less than 0 it will stop and reverse. 
-*/
-rtvalue_t forward(botpos_t *b,botdata_t *bot, int dir){
+
+rtvalue_t forward(botpos_t *b,botdata_t *bot, int dir){// moves the bot forward to "distance" mm untill it reaches its destination or bumps into something
 
 	if(dir == 0){
+		oi_setWheels(0,0);
 		return finish;
 	}
 	else if(dir < 0){
@@ -81,8 +69,9 @@ rtvalue_t forward(botpos_t *b,botdata_t *bot, int dir){
 		timer_waitMillis(300);
 	}
 	else{
-		oi_setWheels(200,200);
+		oi_setWheels(150,150);
 	}
+	timer_waitMillis(200);
 
 	/*
 	if(b->edges[0] == 1){
@@ -94,36 +83,30 @@ rtvalue_t forward(botpos_t *b,botdata_t *bot, int dir){
 	}
 	if(b->angle > 270){
 		b->right += (cos(b->angle) * b->sensor_data->distance);
-		b->forward -= (cos(b->angle) * b->sensor_data->distance);
+		b->forward -= (sin(b->angle) * b->sensor_data->distance);
 	}
 	else if(b->angle > 180){
-		b->right -= (cos(b->angle) * b->sensor_data->distance);
+		b->right -= (sin(b->angle) * b->sensor_data->distance);
 		b->forward -= (cos(b->angle) * b->sensor_data->distance);
 	}
 	else if(b->angle > 90){
 		b->right -= (cos(b->angle) * b->sensor_data->distance);
-		b->forward += (cos(b->angle) * b->sensor_data->distance);
+		b->forward += (sin(b->angle) * b->sensor_data->distance);
 	}
 	else{
-		b->right += (cos(b->angle) * b->sensor_data->distance);
+		b->right += (sin(b->angle) * b->sensor_data->distance);
 		b->forward += (cos(b->angle) * b->sensor_data->distance);
 	}
-
+	oi_setWheels(0,0);
 	return finish;
 }
 
-///If there is a collision it stops
-/**
-*checks if there is a left bump, right bump or both. Then stops.
-*If there are any cliffs it reurns it stops the roomba
-*Depending on the type of collision it will return a different value. 
-*@param b accesses sensor data on the roomba such as bump sensors or cliffs
-*/
 rtvalue_t collision_detection(botpos_t *b){
     oi_update(b->sensor_data);
 //    updateedge(b);
 	if(b->sensor_data->bumpLeft){
 		oi_setWheels(0,0);
+		b->bump = 1;
 		if(b->sensor_data->bumpRight){
 			return bothBump;
 		}
@@ -131,26 +114,30 @@ rtvalue_t collision_detection(botpos_t *b){
 	}
 	if(b->sensor_data->bumpRight){
 		oi_setWheels(0,0);
+		b->bump = 1;
 		return rightBump;
 	}
-	if((cliffleftsurface(b) > 0       ||
-		 cliffleftfrontsurface(b) > 0  ||
-		 cliffrightfrontsurface(b) > 0 ||
-		 cliffrightsurface(b) > 0)){
+	if((cliffleftsurface(b) > 1       ||
+		 cliffleftfrontsurface(b) > 1  ||
+		 cliffrightfrontsurface(b) > 1 ||
+		 cliffrightsurface(b) > 1)){
 		oi_setWheels(0,0);
+		b->bump = 1;
 		return irfault;
 	}
-
+	if((cliffleftsurface(b) > 1       ||
+		 cliffleftfrontsurface(b) > 1  ||
+		 cliffrightfrontsurface(b) > 1 ||
+		 cliffrightsurface(b) > 1)){
+		oi_setWheels(0,0);
+		b->bump = 1;
+		return extraction;
+	}
+	b->bump = 0;
 	return finish;
 }
 
-///Direction determines the direction to turn (right is negitive, left is positive) the value is the number of degrees to turn
-/**
-*updates sensor data as turning the correct amount of degrees and updates the b->angle for future use
-*@param b used for updating sensor data and access the angle of the roomba
-*@param direction to turn the roomba, right is negative, left is positive
-*/
-int turn(botpos_t *b, int direction){
+int turn(botpos_t *b, int direction){ // direction determens the direction to turn (right is negitive, left is positive) the value is the number of degrees to turn
 	int data = 0;
 	if (direction == 0){
 		return 1;
@@ -164,82 +151,84 @@ int turn(botpos_t *b, int direction){
 	while(data < abs(direction) ){
 		oi_update(b->sensor_data);
 		data +=  abs(b->sensor_data->angle);
-		b->angle += b->sensor_data->angle;
+		b->angle -= b->sensor_data->angle;
+
 		if(b->angle >= 360 || b->angle <= -360){
 			b->angle = 0;
 		}
+
 	}
 	oi_setWheels(0,0);
 	return 0;
 }
 
-///Recieves a command from GUI
-/**
-*Depending on the command within bdata->commands, it will either call the part of code to run the action or ignore the if statement.
-*the command is masked so as to see which bit field is registered as a 'high' from the GUI. This is what we do with the recieve code from the GUI
-*@param bdata holds the command. Easy to mask to see which bitfield is 'active'
-*@param bot will be used to help with knowing the position of the bot in the field
-*/
-void recieve_command(botdata_t *bdata, botpos_t *bot){
-int i = 0;
-char commands[2];
-	//weird registers that wont read until data arrives...
-	if((UART1_FR_R & UART_FR_RXFE)) return;
 
-	for( i = 0; i < 2; i++){
-		commands[i] = (char)uart_receive();
-	}
-	bdata->commands = (int)commands;
+void recieve_command(botdata_t *bdata, botpos_t *bot){\
+	rtvalue_t rval = finish;
+	//weird registers that wont read until data arrives...
+	//if((UART1_FR_R & UART_FR_RXFE)) return;
+
+	parse_input(bdata);
 
 
 	if(bdata->commands & 0x02){ 		//left speed
-		interpret_movement(bot,bdata,bdata->commands & 0x02,bdata->commands & 0x10);
+		rval = interpret_movement(bot,bdata,bdata->commands & 0x02,bdata->commands & 0x10);
+		send_position(bot);
 	}
 	else if(bdata->commands & 0x04){ 		//left reverse
-		interpret_movement(bot,bdata,(bdata->commands & 0x04) * -1,(bdata->commands & 0x20));
+		rval = interpret_movement(bot,bdata,(bdata->commands & 0x04) * -1,(bdata->commands & 0x20) * -1);
+		send_position(bot);
 	}
-	if(bdata->commands & 0x10){ 		//right speed
-		interpret_movement(bot,bdata,bdata->commands & 0x02,bdata->commands & 0x10);
+	else if(bdata->commands & 0x10){ 		//right speed
+		rval = interpret_movement(bot,bdata,bdata->commands & 0x02,bdata->commands & 0x10);
+		send_position(bot);
 		//call function/s
 	}
-	if(bdata->commands & 0x20){ 		//right reverse
-		interpret_movement(bot,bdata,(bdata->commands & 0x04) * -1,(bdata->commands & 0x20));
+	else if(bdata->commands & 0x20){ 		//right reverse
+		rval = interpret_movement(bot,bdata,(bdata->commands & 0x04) * -1,(bdata->commands & 0x20)* -1);
+		send_position(bot);
 		//call function/s
+	}
+	else if(bdata->commands & 0x200){ 		//90 degree right turn
+		turn(bot,-45);
+		send_position(bot);
+	}
+	else if(bdata->commands & 0x400){ 		//90 degree left turn
+		turn(bot,45);
+		send_position(bot);
+	}
+	else{
+		oi_setWheels(0,0);
 	}
 
 	if(bdata->commands & 0x40){ 		//start scan
-		//call function/s
-	}
-	else{
-		// other functions
+		object_send(bdata,bot);
 	}
 
 	if(bdata->commands & 0x80){ 		//free collision alert
 		//call function/s
 	}
-	else{
-		// other functions
-	}
-
-	if(bdata->commands & 0x200){ 		//90 degree left turn
-		//call function/s
-	}
-	else{
-		// other functions
-	}
-
-	if(bdata->commands & 0x400){ 		//90 degree right turn
-		turn(bot,90);
-	}
-	else{
-		// other functions
-	}
 
 	if(bdata->commands & 0x800){ 		//stop
-		turn(bot,-90);
-	}
-	else{
-		// other functions
+
 	}
 
+	if(bot->bump){
+		object_send(bdata,bot);
+		bot->bump = 0;
+	}
+}
+
+int parse_input(botdata_t *bdata){
+	char in[10];
+	int i = 0;
+	char temp = 'a';
+	while(temp != '\0') {
+		in[i] = temp = uart_receive();
+		i++;
+	}
+
+	if(i == 10) return 1;
+	bdata->commands = atoi(in);
+	return 0;
 }

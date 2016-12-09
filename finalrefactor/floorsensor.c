@@ -25,90 +25,71 @@
 //	b->edges[3] = b->sensor_data->cliffRight;
 //}
 
-///Returns flag of the ground IR sensors on the roomba
-/**
-*returns a value based on the value read by the bot of sensor_data of the cliffLeftSignal
-*@param b is used to update the sensors for the cliffLeftSignal
-*/
 int cliffleftsurface(botpos_t *b){
 	int data = b->sensor_data->cliffLeftSignal;
 	if(data > 2600){ //white floor (boundary)
-		return 1;
+		return 2;
 	}
 	else if((data <= 2600 && data > 2000) || (data <=1600 && data > 50)){ //under normal floor
 		return 0;
 	}
 	else if(data <=50){ //open floor/hole
-		return 2;
+		return 3;
 	}
 	else if(data <= 2000 && data > 1600){ //Under Extraction Point (BLACK)
-		return 3;
+		return 1;
 	}
 	else {return 4;} //error flag
 }
 
-///Returns flag of the ground IR sensors on the roomba
-/**
-*returns a value based on the value read by the bot of sensor_data of the cliffFrontLeftSignal
-*@param b is used to update the sensors for the cliffFrontLeftSignal
-*/
 int cliffleftfrontsurface(botpos_t *b){
 	int data = b->sensor_data->cliffFrontLeftSignal;
 	if(data > 2600){ //white floor (boundary)
-		return 1;
+		return 2;
 	}
 	else if((data <= 2600 && data > 2000) || (data <=1600 && data > 50)){ //under normal floor
 		return 0;
 	}
 	else if(data <=50){ //open floor/hole
-		return 2;
+		return 3;
 	}
 	else if(data <= 2000 && data > 1600){ //Under Extraction Point (BLACK)
-		return 3;
+		return 1;
 	}
 	else {return 4;} //error flag
 }
 
-///Returns flag of the ground IR sensors on the roomba
-/**
-*returns a value based on the value read by the bot of sensor_data of the cliffRightSignal
-*@param b is used to update the sensors for the cliffRightSignal
-*/
 int cliffrightsurface(botpos_t *b){
 	int data = b->sensor_data->cliffRightSignal;
 	if(data > 2600){ //white floor (boundary)
-		return 1;
+		return 2;
 	}
 	else if((data <= 2600 && data > 2000) || (data <=1600 && data > 50)){ //under normal floor
 		return 0;
 	}
 	else if(data <=50){ //open floor/hole
-		return 2;
+		return 3;
 	}
 	else if(data <= 2000 && data > 1600){ //Under Extraction Point (BLACK)
-		return 3;
+		return 1;
 	}
 	else {return 4;} //error flag
 }
 
-///Returns flag of the ground IR sensors on the roomba
-/**
-*returns a value based on the value read by the bot of sensor_data of the cliffFrontRightSignal
-*@param b is used to update the sensors for the cliffFrontRightSignal
-*/
+
 int cliffrightfrontsurface(botpos_t *b){
 	int data = b->sensor_data->cliffFrontRightSignal;
 	if(data > 2600){ //white floor (boundary)
-		return 1;
+		return 2;
 	}
 	else if((data <= 2600 && data > 2000) || (data <=1600 && data > 50)){ //under normal floor
 		return 0;
 	}
 	else if(data <=50){ //open floor/hole
-		return 2;
+		return 3;
 	}
 	else if(data <= 20100 && data > 1600){ //Under Extraction Point (BLACK)
-		return 3;
+		return 1;
 	}
 	else {return 4;} //error flag
 }
