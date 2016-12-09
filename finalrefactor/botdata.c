@@ -31,6 +31,8 @@ void botdata_init(botdata_t *bdata){
 		bdata->obj[i].number = -1;
 		bdata->obj[i].width = -1;
 	}
+	bdata->commands = 0;
+	bdata->obj_count = 0;
 }
 
 

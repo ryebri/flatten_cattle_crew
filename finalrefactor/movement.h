@@ -11,7 +11,7 @@
 #include "open_interface.h"
 #include "botdata.h"
 
-typedef enum rtvalue {leftBump,rightBump,bothBump,irfault,finish} rtvalue_t;
+typedef enum rtvalue {leftBump,rightBump,bothBump,finish,irfault,extraction} rtvalue_t;
 
 
 typedef struct botpos{
@@ -28,7 +28,7 @@ void botpos_init(botpos_t *b);
 rtvalue_t interpret_movement(botpos_t *b, botdata_t *bdata, int left, int right);
 rtvalue_t collision_detection(botpos_t *b);
 void recieve_command(botdata_t *bdata, botpos_t *bot);
-
+int parse_input(botdata_t *bdata);
 
 
 #endif /* MOVEMENT_H_ */

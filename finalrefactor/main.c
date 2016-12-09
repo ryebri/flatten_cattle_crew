@@ -15,6 +15,7 @@
 #include "floorsensor.h"
 #include "botdata.h"
 #include "sweep.h"
+#include "main.h"
 
 void object_send(botdata_t *bdata, botpos_t *bpos);
 void sonar_init();
@@ -80,7 +81,7 @@ int main(void){
 	WiFi_start("PplmcWtft!");
 	//interpret_buttons(7);	//so we can move the servo to 90 degrees
 //	rec_string[i] = uart_receive();		//when using putty
-
+//	oi_close();
 	move_servo(0);
 	bpos.sensor_data = openi;
 	state = LOW;
@@ -94,7 +95,9 @@ int main(void){
 		uart_sendStr(str);
 		timer_waitMillis(200);
 	}*/
+	oi_setWheels(0,0);
 	while(1){
+//		interpret_movement(&bpos,&bdata,-1,-1);
 		recieve_command(&bdata,&bpos);
 	}
 
@@ -118,17 +121,18 @@ void object_send(botdata_t *bdata, botpos_t *bpos){ // analizes sweep data and s
 	do_sweep(bdata);
 	analyze(bdata);
 	sendscandata(bdata);
-	find_width(bdata, &state, &initial_value, &second_value);\
+	find_width(bdata, &state, &initial_value, &second_value);
+
+	send_position(bpos);
 
 
 
 
-
-	sprintf(send_string, "{\"sensors\": [%03d, %03d, %03d, %03d, %03d]}\n\0",cliffleftsurface(bpos), cliffleftfrontsurface(bpos),
+	sprintf(send_string, "{\"sensors\": [%03d,%03d,%03d,%03d,%03d]}\n\0",cliffleftsurface(bpos), cliffleftfrontsurface(bpos),
 		cliffrightfrontsurface(bpos), cliffrightsurface(bpos),3);
 
 	uart_sendStr(send_string);
-
+	uart_flush();
 //print smallest object
 	/*
 	initial = 0;
@@ -152,7 +156,7 @@ void object_send(botdata_t *bdata, botpos_t *bpos){ // analizes sweep data and s
 void send_position(botpos_t *bpos){
 	char send_string[45];
 	int rneg,fneg,rnegbool,lnegbool,banglefix;
-
+	rneg = fneg = rnegbool = lnegbool = 0;
 	if(bpos->right < 0){
 		rneg = -1;
 		rnegbool = 1;
@@ -173,7 +177,9 @@ void send_position(botpos_t *bpos){
 	else banglefix = 0;
 
 
-	sprintf(send_string, "{\"position\": [%03d, %03d, %03d, %03d, %03d,%03d]}\n\0",bpos->right * rneg, rnegbool,bpos->forward * fneg, lnegbool, bpos->angle + banglefix, bpos->bump);
+	sprintf(send_string, "{\"position\": [%03d,%03d,%03d,%03d,%03d,%03d]}\n\0",bpos->right * rneg, rnegbool,bpos->forward * fneg, lnegbool, bpos->angle + banglefix, bpos->bump);
+	uart_sendStr(send_string);
+	uart_flush();
 
 }
 

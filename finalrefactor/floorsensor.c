@@ -28,16 +28,16 @@
 int cliffleftsurface(botpos_t *b){
 	int data = b->sensor_data->cliffLeftSignal;
 	if(data > 2600){ //white floor (boundary)
-		return 1;
+		return 2;
 	}
 	else if((data <= 2600 && data > 2000) || (data <=1600 && data > 50)){ //under normal floor
 		return 0;
 	}
 	else if(data <=50){ //open floor/hole
-		return 2;
+		return 3;
 	}
 	else if(data <= 2000 && data > 1600){ //Under Extraction Point (BLACK)
-		return 3;
+		return 1;
 	}
 	else {return 4;} //error flag
 }
@@ -45,16 +45,16 @@ int cliffleftsurface(botpos_t *b){
 int cliffleftfrontsurface(botpos_t *b){
 	int data = b->sensor_data->cliffFrontLeftSignal;
 	if(data > 2600){ //white floor (boundary)
-		return 1;
+		return 2;
 	}
 	else if((data <= 2600 && data > 2000) || (data <=1600 && data > 50)){ //under normal floor
 		return 0;
 	}
 	else if(data <=50){ //open floor/hole
-		return 2;
+		return 3;
 	}
 	else if(data <= 2000 && data > 1600){ //Under Extraction Point (BLACK)
-		return 3;
+		return 1;
 	}
 	else {return 4;} //error flag
 }
@@ -62,16 +62,16 @@ int cliffleftfrontsurface(botpos_t *b){
 int cliffrightsurface(botpos_t *b){
 	int data = b->sensor_data->cliffRightSignal;
 	if(data > 2600){ //white floor (boundary)
-		return 1;
+		return 2;
 	}
 	else if((data <= 2600 && data > 2000) || (data <=1600 && data > 50)){ //under normal floor
 		return 0;
 	}
 	else if(data <=50){ //open floor/hole
-		return 2;
+		return 3;
 	}
 	else if(data <= 2000 && data > 1600){ //Under Extraction Point (BLACK)
-		return 3;
+		return 1;
 	}
 	else {return 4;} //error flag
 }
@@ -80,16 +80,16 @@ int cliffrightsurface(botpos_t *b){
 int cliffrightfrontsurface(botpos_t *b){
 	int data = b->sensor_data->cliffFrontRightSignal;
 	if(data > 2600){ //white floor (boundary)
-		return 1;
+		return 2;
 	}
 	else if((data <= 2600 && data > 2000) || (data <=1600 && data > 50)){ //under normal floor
 		return 0;
 	}
 	else if(data <=50){ //open floor/hole
-		return 2;
+		return 3;
 	}
 	else if(data <= 20100 && data > 1600){ //Under Extraction Point (BLACK)
-		return 3;
+		return 1;
 	}
 	else {return 4;} //error flag
 }

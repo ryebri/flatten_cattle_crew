@@ -55,6 +55,7 @@ void do_sweep(botdata_t *bdata){
 void analyze(botdata_t *bdata) // checks for objects
 {
 	int i = 0;
+	bdata->obj_count = 0;
 	for(i = 1; i < 179; i++)
 	{
 		if((bdata->ir_measure[i-1] == -1 && bdata->ir_measure[i+1] == -1) && bdata->ir_measure[i] >=0)
@@ -147,7 +148,7 @@ void sendscandata(botdata_t *bdata){
 		}
 
 		uart_sendStr(send_string);
-
+		uart_flush();
 
 
 }
@@ -230,7 +231,7 @@ void find_width(botdata_t *bdata, state_t volatile *state,volatile unsigned int 
 //			sprintf(send_string, "Object %d out of range, ignoring values\r\n", i);
 		}
 //		uart_sendStr(send_string);
-		lcd_printf("%s\n", send_string);
+//		lcd_printf("%s\n", send_string);
 	//		timer_waitMillis(500);
 	}
 
@@ -243,9 +244,12 @@ void find_width(botdata_t *bdata, state_t volatile *state,volatile unsigned int 
 	j++;
 	send_string[j] = '\0';
 
-	//uart_sendStr(send_string); Moved lines below here from object send
-	sprintf(send_string, "number of objects found %d", bdata->obj_count);
+	uart_sendStr(send_string); //Moved lines below here from object send
+	uart_flush();
+/*
+	sprintf(send_string, "number of objects found %d", bdata->obj_count); //TODO
 	uart_sendStr(send_string);
+	*/
 }
 
 void move_servo(double degree)
