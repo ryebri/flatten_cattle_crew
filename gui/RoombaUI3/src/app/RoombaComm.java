@@ -1,3 +1,10 @@
+/**
+ * @file RoombaComm.java
+ * @brief The communications class.  This class contains methods for communicating with
+ * the roomba.
+ * @author ryebri
+ * @date 12/06/2016
+ */
 package app;
 
 import java.io.BufferedReader;
@@ -12,13 +19,7 @@ import java.util.Random;
 import app.view.OutputTextController;
 
 ///Communication Class
-/**
- * Object for communicating with the roomba.
- * @author ryebri
- *
- */
 public class RoombaComm {
-	//constructor
 	private Socket socket;
 	private BufferedReader in;
 	private PrintWriter out;

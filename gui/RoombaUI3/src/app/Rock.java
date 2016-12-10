@@ -1,3 +1,9 @@
+/**
+ * @file Rock.java
+ * @brief Class which contains methods for drawing rocks
+ * @author ryebri
+ * @date 12/06/2016
+ */
 package app;
 
 import java.awt.Point;
@@ -6,11 +12,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 ///Class for rock objects
-/**
- * Class which contains methods for drawing rocks
- * @author ryebri
- *
- */
 public class Rock extends Obstruction {
 
 	private Point point;

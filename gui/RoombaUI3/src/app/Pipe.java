@@ -1,3 +1,9 @@
+/**
+ * @file Pipe.java
+ * @brief Class containing information about the pipe object
+ * @author ryebri
+ * @date 12/06/2016
+ */
 package app;
 
 import java.awt.Point;

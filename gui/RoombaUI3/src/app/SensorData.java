@@ -1,12 +1,13 @@
+/**
+ * @file SensorData.java
+ * @brief Interprets the json data sent from the roomba and creates proper objects based upon which object
+ * type is contained within the json data.
+ * @author ryebri
+ * @date 12/06/2016
+ */
 package app;
 
 ///Class to interpret json data
-/**
- * Interprets the json data sent from the roomba and creates proper objects based upon which object
- * type is contained within the json data.
- * @author ryebri
- *
- */
 public class SensorData {
 	
 //	public enum Sensor {

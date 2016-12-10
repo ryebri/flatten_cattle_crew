@@ -1,17 +1,27 @@
+/**
+ * @file Obstruction.java
+ * @brief Super class that all of the obstruction objects extend.  Allows 1 obstruction array to
+ * be used instead of multiple arrays.
+ * @author ryebri
+ * @date 12/06/2016
+ */
 package app;
 
 import javafx.scene.canvas.GraphicsContext;
 
 ///Super class Obstructions
-/**
- * Super class that all of the obstruction objects extend.  Allows 1 obstruction array to
- * be used instead of multiple arrays.
- * @author ryebri
- *
- */
 public class Obstruction {
 	
 	//might not be able to tell the difference between a large pipe and a small pipe
+	///Enum used to differentiate obstructions
+	/**
+	 * Enums which contain an index value to allow for simple comparisons
+	 * LARGE_PIPE(0)
+	 * SMALL_PIPE(1)
+	 * ROCK(2)
+	 * LINE(3)
+	 * HOLE(4)
+	 */
 	public enum ObstructionType {
 		LARGE_PIPE(0), SMALL_PIPE(1), ROCK(2), LINE(3), HOLE(4);
 		

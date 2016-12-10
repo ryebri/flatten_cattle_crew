@@ -1,3 +1,11 @@
+/**
+ * @file ResizableCanvas.java
+ * @brief Class not used.  Original intent was to allow for flexibility of the UI so that
+ * the user could change the size of the UI.  Unfortunately was not vital to core functionality
+ * and time did not allow for full implementation to occur.  UI must remain at start size.
+ * @author ryebri
+ * @date 12/06/2016
+ */
 package app;
 
 import javafx.scene.canvas.Canvas;

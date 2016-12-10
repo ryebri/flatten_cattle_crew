@@ -1,13 +1,14 @@
+/**
+ * @file Position.java
+ * @brief Class which keeps track of where the roomba is, and where it is on the canvas.
+ * @author ryebri
+ * @date 12/06/2016
+ */
 package app;
 
 import java.awt.Point;
 
 ///Position Class Object
-/**
- * Class which keeps track of where the roomba is, and where it is on the canvas.
- * @author ryebri
- *
- */
 public class Position {
 	
 	///Enum for the cardinal directions

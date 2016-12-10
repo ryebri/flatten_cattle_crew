@@ -1,3 +1,11 @@
+/**
+ * @file Obstruction_oldstuff.java
+ * @brief This class was created as the original Obstruction class, but was not used in the
+ * final project.  Initially planned on having all obstructions be obstructions instead of
+ * just extending a super class.  It separates out the functionality a bit.
+ * @author ryebri
+ * @date 12/06/2016
+ */
 package app;
 
 import java.awt.Point;

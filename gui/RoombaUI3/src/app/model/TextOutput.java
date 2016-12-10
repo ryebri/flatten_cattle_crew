@@ -1,14 +1,15 @@
+/**
+ * @file TextOutput.java
+ * @brief Custom Class for displaying messages in the GUI
+ * @author ryebri
+ * @date 12/06/2016
+ */
 package app.model;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 ///Class for message boxes
-/**
- * Custom Class for displaying messages in the GUI
- * @author ryebri
- *
- */
 public class TextOutput {
 	private StringProperty output;
 	

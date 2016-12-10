@@ -1,3 +1,11 @@
+/**
+ * @file OutputTextController.java
+ * @brief This class listens to the textbox on the GUI to know when to send a signal to the roomba
+ * and when to receive information from the roomba.  When it receives data, it is in charge of
+ * telling the proper classes to call the proper methods for parsing and interpretation
+ * @author ryebri
+ * @date 12/06/2016
+ */
 package app.view;
 
 import java.awt.Point;
@@ -27,14 +35,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-///Class to interpret data
-/**
- * This class listens to the textbox on the GUI to know when to send a signal to the roomba
- * and when to receive information from the roomba.  When it receives data, it is in charge of
- * telling the proper classes to call the proper methods for parsing and interpretation
- * @author ryebri
- *
- */
+///Class to interpret User Interface controlls
 public class OutputTextController {
 	@FXML
 	private TableView<TextOutput> outputList;

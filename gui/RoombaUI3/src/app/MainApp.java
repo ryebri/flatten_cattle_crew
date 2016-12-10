@@ -1,3 +1,10 @@
+/**
+ * @file MainApp.java
+ * @brief Beginning of the JavaFX GUI.  Contains a variable called test which when assigned 0x00 creates
+ * the roomba communication object, otherwise it enables various test methods throughout the code.
+ * @author ryebri
+ * @date 12/06/2016
+ */
 package app;
 
 import java.io.IOException;
@@ -16,13 +23,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-///Main Class which starts everything
-/**
- * Beginning of the JavaFX GUI.  Contains a variable called test which when assigned 0x00 creates
- * the roomba communication object, otherwise it enables various test methods throughout the code.
- * @author ryebri
- *
- */
 public class MainApp extends Application {
 
 	private Stage primaryStage;
