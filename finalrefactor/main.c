@@ -1,6 +1,11 @@
-/*
- * main.c
- */
+/**
+  * @file: main.c
+  * @brief: The main function for the roomba.  
+  * 	    All pieces connected together
+  * @author:
+  * @date:
+  *
+  */
 #include <stdbool.h>
 #include "open_interface.h"
 #include "movement.h"
@@ -116,7 +121,13 @@ int main(void){
 	return 0;
 }
 
-
+/// object_send:  sends the scan data from the robot to java to layout the GUI objects and position
+/**
+ *The function sweeps/scans, analyzes the raw data for the sweep/scan, finds the width of objects if found
+ *from the analyzied data, and then sends the position of the robot to the GUI 
+ *@param: N/A
+ *@return: N/A
+ */
 void object_send(botdata_t *bdata, botpos_t *bpos){ // analizes sweep data and sends json object
 	char send_string[45];
 
@@ -155,6 +166,14 @@ void object_send(botdata_t *bdata, botpos_t *bpos){ // analizes sweep data and s
 	//uart_sendStr(send_string);
 }
 
+/// send_position: finds the position (x,y) of the robot
+/**
+ * The function finds the change in x(right is positive;left is negative) and y (forward/upward is positive;backward/downward is negative) 
+ * of the robot from its current position for the GUI.  The function looks at the struct botpos_t bpos and finds if the moves in the +/- x direction
+ * and/or +/- y direction and sends the changes of x and y to the GUI to interpret.
+ * @param: botpos_t *bpos  uses the position of the bot
+ * @return: N/A
+ */
 void send_position(botpos_t *bpos){
 	char send_string[45];
 	int rneg,fneg,rnegbool,lnegbool,banglefix;
@@ -184,7 +203,12 @@ void send_position(botpos_t *bpos){
 	uart_flush();
 
 }
-
+/// sonar_init: Initializes the registers for the sonar sensor
+/**
+ *Sets up the registers
+ *@param: N/A
+ *@return: N/A
+ */
 void sonar_init(){
 	//initialize the timer
 	//initialize the gpio port
@@ -226,6 +250,12 @@ void sonar_init(){
 
 }
 
+/// ir_sensor_init: Initializes the registers for the ir sensor
+/**
+ *Sets up the registers
+ *@param: N/A
+ *@return: N/A
+ */
 void ir_sensor_init(){
 	//initialize gpio
 	//enable ADC 0 module on port B
@@ -265,7 +295,12 @@ void ir_sensor_init(){
 	//re-enable ADC0 SS0
 	ADC0_ACTSS_R |= ADC_ACTSS_ASEN0;
 }
-
+/// servo_init: Initializes the registers for the servo device
+/**
+ *Sets up the registers
+ *@param: N/A
+ *@return: N/A
+ */
 void servo_init(){
 	//initialize the timer
 	//***set GPIO PB5, turn on clk, alt. function, output, enable***
@@ -286,7 +321,12 @@ void servo_init(){
 	GPIO_PORTB_DIR_R |= 0x20; // set PB5 as output 0b0010 0000
 	GPIO_PORTB_DEN_R |= 0x20;
 }
-
+/// TIMER3B_Hanble: The handler of the interrupts of TIMER3B
+/**
+ * When an interrupt happens on timer3b, we go through this routine code
+ *@param: N/A
+ *@return: N/A
+ */
 void TIMER3B_Handler(void){
 	TIMER3_ICR_R |= TIMER_IMR_CBEIM;
 
@@ -300,6 +340,12 @@ void TIMER3B_Handler(void){
 
 }
 
+/// interpret_buttons: interputs what to do depending on the button being pressed
+/**
+ * Tells the functionality of each button depending on parameter via switch statements 
+ *@param: int button  The status of button.  Takes value from 1-6.
+ *@return: N/A
+ */
 void interpret_buttons(int button)
 {
 	double degree = 0;
