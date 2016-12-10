@@ -37,7 +37,11 @@ public class Hole extends Obstruction {
 		set_type(ObstructionType.HOLE);
 		point = new Point();
 	}
-	
+	///Draws the Pipe
+	/**
+	 * Draws the pipe object on the canvas.
+	 * @param gc GraphicsContext object so that the pipe object can be drawn
+	 */
 	@Override
 	public void drawShape(GraphicsContext gc){
 		gc.setFill(Color.ORANGE);

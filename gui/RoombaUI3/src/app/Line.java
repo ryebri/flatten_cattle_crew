@@ -42,7 +42,11 @@ public class Line extends Obstruction {
 		p1 = new Point(x1, y1);
 		p2 = new Point(x2, y2);
 	}
-	
+	///Draws the Pipe
+	/**
+	 * Draws the pipe object on the canvas.
+	 * @param gc GraphicsContext object so that the pipe object can be drawn
+	 */
 	@Override
 	public void drawShape(GraphicsContext gc){
 		gc.setStroke(Color.WHITE);

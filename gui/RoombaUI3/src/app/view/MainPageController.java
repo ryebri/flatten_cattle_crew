@@ -10,6 +10,7 @@ package app.view;
 
 import javafx.beans.property.StringProperty;
 
+///Main Page Controller
 public class MainPageController {
 	private StringProperty commandBox;
 	

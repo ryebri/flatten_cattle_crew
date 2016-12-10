@@ -10,6 +10,7 @@ package app;
 
 import java.awt.Point;
 
+///Obstruction old stuff NOT USED
 public class Obstruction_oldstuff {
 	
 	private int width;			//calculated width of object
