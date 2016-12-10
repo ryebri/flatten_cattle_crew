@@ -13,6 +13,10 @@
 
 typedef enum rtvalue {leftBump,rightBump,bothBump,finish,irfault,extraction} rtvalue_t;
 
+///the positinal data of the bot
+/**
+ * contains the bump state, angle, x, y, and open interface object pointer
+ */
 
 typedef struct botpos{
 	int bump;
