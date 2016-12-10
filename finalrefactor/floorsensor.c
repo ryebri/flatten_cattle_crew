@@ -27,16 +27,16 @@
 
 int cliffleftsurface(botpos_t *b){
 	int data = b->sensor_data->cliffLeftSignal;
-	if(data > 2600){ //white floor (boundary)
+	if(data > 2650){ //white floor (boundary)
 		return 2;
 	}
-	else if((data <= 2600 && data > 2000) || (data <=1600 && data > 50)){ //under normal floor
+	else if((data <= 2650 && data > 1900) || (data <=1600 && data > 50)){ //under normal floor
 		return 0;
 	}
 	else if(data <=50){ //open floor/hole
 		return 3;
 	}
-	else if(data <= 2000 && data > 1600){ //Under Extraction Point (BLACK)
+	else if(data <= 1900 && data > 800){ //Under Extraction Point (BLACK)
 		return 1;
 	}
 	else {return 4;} //error flag

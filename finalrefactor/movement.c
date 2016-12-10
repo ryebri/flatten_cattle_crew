@@ -10,7 +10,7 @@
 #include "floorsensor.h"
 #include "uart.h"
 #include "main.h"
-
+#include "botlogic.h"
 void botpos_init(botpos_t *b){
 	b->angle = 0;
 	b->forward = 0;
@@ -58,6 +58,7 @@ rtvalue_t interpret_movement(botpos_t *b, botdata_t *bdata, int left, int right)
 
 
 rtvalue_t forward(botpos_t *b,botdata_t *bot, int dir){// moves the bot forward to "distance" mm untill it reaches its destination or bumps into something
+	int i, tempangle;
 
 	if(dir == 0){
 		oi_setWheels(0,0);
@@ -71,7 +72,6 @@ rtvalue_t forward(botpos_t *b,botdata_t *bot, int dir){// moves the bot forward 
 	else{
 		oi_setWheels(150,150);
 	}
-	timer_waitMillis(200);
 
 	/*
 	if(b->edges[0] == 1){
@@ -79,23 +79,35 @@ rtvalue_t forward(botpos_t *b,botdata_t *bot, int dir){// moves the bot forward 
 	}
 	*/
 	//a^2 + b^2 = distance;
-	if(b->angle > 360){
-	}
-	if(b->angle > 270){
-		b->right += (cos(b->angle) * b->sensor_data->distance);
-		b->forward -= (sin(b->angle) * b->sensor_data->distance);
-	}
-	else if(b->angle > 180){
-		b->right -= (sin(b->angle) * b->sensor_data->distance);
-		b->forward -= (cos(b->angle) * b->sensor_data->distance);
-	}
-	else if(b->angle > 90){
-		b->right -= (cos(b->angle) * b->sensor_data->distance);
-		b->forward += (sin(b->angle) * b->sensor_data->distance);
+	if(b->angle < 360){
+		tempangle = b->angle +360;
 	}
 	else{
-		b->right += (sin(b->angle) * b->sensor_data->distance);
-		b->forward += (cos(b->angle) * b->sensor_data->distance);
+		tempangle = b->angle;
+	}
+	for(i = 0; i <40; i++){
+		if(collision_detection(b) != finish){
+			oi_setWheels(-100,-100);
+			timer_waitMillis(100);
+			break;
+		}
+		if(tempangle > 270){
+			b->right += (cos(tempangle) * b->sensor_data->distance);
+			b->forward -= (sin(tempangle) * b->sensor_data->distance);
+		}
+		else if(tempangle > 180){
+			b->right += (sin(tempangle) * b->sensor_data->distance);
+			b->forward -= (cos(tempangle) * b->sensor_data->distance);
+		}
+		else if(tempangle > 90){
+			b->right += (cos(tempangle) * b->sensor_data->distance);
+			b->forward -= (sin(tempangle) * b->sensor_data->distance);
+		}
+		else{
+			b->right += (sin(tempangle) * b->sensor_data->distance);
+			b->forward -= (cos(tempangle) * b->sensor_data->distance);
+		}
+		timer_waitMillis(5);
 	}
 	oi_setWheels(0,0);
 	return finish;
@@ -209,12 +221,12 @@ void recieve_command(botdata_t *bdata, botpos_t *bot){\
 		//call function/s
 	}
 
-	if(bdata->commands & 0x800){ 		//stop
-
+	if(bdata->commands & 0x100){ 		//stop
+		play_song(bot);
 	}
 
 	if(bot->bump){
-		object_send(bdata,bot);
+		timer_waitMillis(5000);
 		bot->bump = 0;
 	}
 }

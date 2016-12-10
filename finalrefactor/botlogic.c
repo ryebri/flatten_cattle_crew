@@ -75,7 +75,7 @@ int send_sensor(botdata_t bot, botpos_t *bpos){
 	return 0;
 }
 
-void play_song(){
+void play_song(botpos_t *bpos){
 	int song_n = 0;
 	int num_notes = 64;
 	unsigned char notes [64] =    {88, 86, 88, 81,  0, 89, 88, 89, 88, 86,  0, 89, 88, 89, 81,  0, 86, 84, 86, 84, 83, 86, 84, 88, 86, 88, 81,  0, 89, 88, 89, 88, 86,  0, 89, 88, 89, 81,  0, 86, 84, 86, 84, 83, 86, 84, 83, 84, 86, 83, 84, 88, 86, 84, 83, 81, 89, 88, 88, 89, 88, 86, 100};
@@ -83,4 +83,8 @@ void play_song(){
 	oi_loadSong(song_n, num_notes, notes, duration);
 	oi_play_song(song_n);
 
+	while(1){
+		oi_update(bpos->sensor_data);
+		if(bpos->sensor_data->songPlaying == 0){ break;}
+	}
 }
