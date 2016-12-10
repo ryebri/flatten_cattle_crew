@@ -85,7 +85,8 @@ int main(void){
 	move_servo(0);
 	bpos.sensor_data = openi;
 	state = LOW;
-	/*
+/*
+	char *str[45];
 	while(1){	//IR floor sensor testing
 		oi_update(openi);
 		sprintf(str,"L : %3d  FL: %3d  FR: %3d  R : %3d\n\r", openi->cliffLeftSignal,
@@ -94,7 +95,8 @@ int main(void){
 													 openi->cliffRightSignal);
 		uart_sendStr(str);
 		timer_waitMillis(200);
-	}*/
+	}
+	*/
 	oi_setWheels(0,0);
 	while(1){
 //		interpret_movement(&bpos,&bdata,-1,-1);
