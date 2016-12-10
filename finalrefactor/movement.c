@@ -1,8 +1,9 @@
-/*
- * movement.c
+/**
+ *	@file movement.c
+ *	@brief contains the functions for movement of the bot
+ *  @Author borseth
+ *  @date Sep 9, 2016
  *
- *  Created on: Sep 9, 2016
- *      Author: borseth
  */
 #include <stdlib.h>
 #include "movement.h"
@@ -11,11 +12,27 @@
 #include "uart.h"
 #include "main.h"
 #include "botlogic.h"
+
+///initilizes a botpos_t
+/**
+ * initilizes the botpos_t to be the starting position
+ * @param botpos_t* the botpos_t to be initilized
+ */
+
 void botpos_init(botpos_t *b){
 	b->angle = 0;
 	b->forward = 0;
 	b->right = 0;
 }
+
+///decides which way the bot needs to move based off input
+/**
+ * takes some parsed input from the user and decides to move forward, backwards, right, or left
+ * @param botpos_t* the botpos_t to update current position
+ * @param botdata_t* the botdata_t to update with new data
+ * @param int left the left speed (0 stay 1 forward -1 backwards)
+ * @param int right the right speed (0 stay 1 forward -1 backwards)
+ */
 
 rtvalue_t interpret_movement(botpos_t *b, botdata_t *bdata, int left, int right){
 	rtvalue_t rval;
@@ -56,7 +73,12 @@ rtvalue_t interpret_movement(botpos_t *b, botdata_t *bdata, int left, int right)
 	return finish;
 }
 
-
+///commands the bot to move forward if dir != 0 and none of the sensors are triggerd
+/**
+ * @param botpos_t* the position to update the current position of the bot
+ * @param botdata_t* the bot data to update sensor readings
+ * @param int dir the direction the bot should move (1 forward -1 backward)
+ */
 rtvalue_t forward(botpos_t *b,botdata_t *bot, int dir){// moves the bot forward to "distance" mm untill it reaches its destination or bumps into something
 	int i, tempangle;
 
@@ -113,6 +135,12 @@ rtvalue_t forward(botpos_t *b,botdata_t *bot, int dir){// moves the bot forward 
 	return finish;
 }
 
+///checks for a collision
+/**
+ * checks all floor and bump sensors for a collision
+ * @param botpos_t* the position of the bot to use the open interface object to get sensor readings
+ */
+
 rtvalue_t collision_detection(botpos_t *b){
     oi_update(b->sensor_data);
 //    updateedge(b);
@@ -149,6 +177,13 @@ rtvalue_t collision_detection(botpos_t *b){
 	return finish;
 }
 
+///tells the bot to turn a specifide degrees left or right
+/**
+ * based off input instructs the bot to turn a specified degrees from the starting direction
+ * @param botpos_t* the bot position to update the angle of the bot
+ * @param int direction the number of degrees to turn (negative turns right, positive turns left)
+ */
+
 int turn(botpos_t *b, int direction){ // direction determens the direction to turn (right is negitive, left is positive) the value is the number of degrees to turn
 	int data = 0;
 	if (direction == 0){
@@ -174,6 +209,12 @@ int turn(botpos_t *b, int direction){ // direction determens the direction to tu
 	return 0;
 }
 
+///waits for input from the user and executes commands
+/**
+ * waits for input and calls functions to perform actions based on the commands
+ * @param botdata_t* the botdata to update the current command
+ * @param botpos_t* the botpos_t to update the current position
+ */
 
 void recieve_command(botdata_t *bdata, botpos_t *bot){\
 	rtvalue_t rval = finish;
@@ -230,6 +271,12 @@ void recieve_command(botdata_t *bdata, botpos_t *bot){\
 		bot->bump = 0;
 	}
 }
+
+///recives input from WIFI
+/**
+ * waits for input from WIFI and places it into an array to be turned into a bitfield
+ * @param botdata_t* the botdata to update current command
+ */
 
 int parse_input(botdata_t *bdata){
 	char in[10];
