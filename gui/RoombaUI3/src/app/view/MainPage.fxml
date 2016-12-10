@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.canvas.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="main_scene" prefHeight="300.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.view.OutputTextController">
+   <children>
+      <BorderPane fx:id="main_borderPane" layoutX="164.0" layoutY="70.0" prefHeight="300.0" prefWidth="600.0" style="-fx-background-color: grey; -fx-border-color: blue;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <top>
+            <Group fx:id="sensor_group">
+               <children>
+                  <Canvas fx:id="sensor_map" height="92.0" width="900.0" BorderPane.alignment="CENTER" />
+               </children>
+            </Group>
+         </top>
+         <center>
+            <Canvas fx:id="area_map" height="550.0" width="860.0" BorderPane.alignment="CENTER" />
+         </center>
+         <bottom>
+            <TextField fx:id="cmdLineBox" onAction="#onEnter" BorderPane.alignment="CENTER" />
+         </bottom>
+         <right>
+            <TableView fx:id="outputList" prefHeight="200.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+              <columns>
+                <TableColumn fx:id="firstColumn" prefWidth="75.0" text="CmdOutput" />
+              </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+         </right>
+      </BorderPane>
+   </children>
+</AnchorPane>
