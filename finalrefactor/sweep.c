@@ -1,9 +1,10 @@
-/*
- * sweep.c
- *
- *  Created on: Dec 3, 2016
- *      Author: borseth
+/**
+ * @file sweep.c
+ * @brief this file sweeps the servo and sends back iR and Ping data back in an array
+ * @author  borseth, sjwarren
+ * @date 11/20/2016
  */
+ 
 #include "sweep.h"
 #include "botdata.h"
 #include "timer.h"
@@ -14,6 +15,13 @@
 #include <stdio.h>
 #include <string.h>
 
+///Sweeps the field of view for objects
+/**
+*This is how we sweep the motor that will turn the IR sensor
+*this function will measure how far away 'objects' are but does not define
+*what an object is or what is not an object
+*@param bdata, botdata_t * holds the raw data from the IR sweep
+*/
 void do_sweep(botdata_t *bdata){
 
 	int ir_dist = 0, ir_dist2 = 0, ir_dist3 = 0;
@@ -51,7 +59,13 @@ void do_sweep(botdata_t *bdata){
 	}
 }
 
-
+///Analyze data from sweep, and tells array what counts an object and does not
+/**
+*Sweeps through the entire sweep function checking for objects.
+*objects are stored as -1, otherwise the non-objects are 1's
+*Calculates the width of the object
+*@param bdata uses sweep data and updates the object count
+*/
 void analyze(botdata_t *bdata) // checks for objects
 {
 	int i = 0;
@@ -95,6 +109,13 @@ void analyze(botdata_t *bdata) // checks for objects
 	}
 }
 
+///Sends the analyzed data to the json array and sends it to the GUI
+/**
+* Uses send_string to store the string that will be sent
+* middle of code prepares the values that were in the analyzed code into send_string to be sent
+* end part completes the formatting necessary to semd out send_string to the GUI
+* @param bdata uses the (analyzed)ir_measure data to give correct values to send_string
+*/
 void sendscandata(botdata_t *bdata){
 // start of json object
 	int i, j, temp;
@@ -153,8 +174,15 @@ void sendscandata(botdata_t *bdata){
 
 }
 
-
-
+///Finds the width, angle and distance of the physical object and sends it out in a json array to the GUI
+/**
+*Similiar to sendscandata(), this function will send the data to the GUI in a json array
+*For each object it will send out a sonar signal-send_pulse() to the object to determine the distance of robot to object 
+*Puts the distance, angle and width into a json to be sent to the GUI. Prepares end of json. Sends json to GUI
+*@param bdata uses the stored data to help with distance, width, and angle calculations for the json
+*@param state when the state is not equal to READY, the program will then continue on. Acts as a pause
+*@param initial_value used in time2distance() to store the initial value of the ping sensor
+*/
 void find_width(botdata_t *bdata, state_t volatile *state,volatile unsigned int *initial_value,
 		volatile unsigned int *second_value) 	//finds widht of object
 					//generates json object
@@ -252,13 +280,14 @@ void find_width(botdata_t *bdata, state_t volatile *state,volatile unsigned int 
 	*/
 }
 
+///Moves the servo a certain number of degrees. 180 will be left, 0 will be right, 90 is center
+/**
+*Will make the servo move a certain number of degrees depending on the degree sent to the function
+*This is primarily done with mid_width. subtracting pulseperiod from the mid_width will have the servo move a certain amount of degrees
+*@param degrees Will take in a degree that the user wants the servo to turn. 
+*/
 void move_servo(double degree)
 {
-//	unsigned pulse_width; // pulse width in cycles
-	// calculate pulse width in cycles
-	//TIMER0_TAMATCHR_R = period_width - pulse_width; // set pulse width
-	// you need to call timer_waitMillis( ) here to enforce a delay for the servo to
-	// move to the position
 
 	int pulse_period = 320000;	//clock cycles ~20ms pulse width
 	double mid_width = 24000;	//up time of clock cycle
@@ -285,8 +314,16 @@ void move_servo(double degree)
 
 }
 
-unsigned time2distance(unsigned int *initial_value, unsigned int *second_value,
-						state_t *state ){
+/// Calculates the distance from Robot to Object
+/**
+*Uses the speed of sound to calculate the ping distance from the ping sensor/robot to object and back to ping sensor/robot
+*Saves this in a json that could be sent to the GUI
+*
+*@param initial_value holds the ping sensor's first value
+*@param second_value holds the ping sensor's second value for calculation of distance 
+*@param state lets the rest of the program know when it has completed this task
+*/
+unsigned time2distance(unsigned int *initial_value, unsigned int *second_value, state_t *state ){
 	int overflow = 0, value=0, final_value=0, distance=0;
 
 	if(*second_value < *initial_value)
